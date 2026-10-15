@@ -34,12 +34,6 @@ partecipa: {
   lead: "Dicci se vieni, quanti giorni resti e se tiri. Ci serve per organizzare case e squadre.",
   giorni: [["sab","Sab 6"],["dom","Dom 7"],["lun","Lun 8"],["mar","Mar 9"]]
 },
-novita: {
-  titolo: "Dal sito ufficiale",
-  lead: "Le ultime notizie della Fondazione dello Storico Carnevale di Ivrea.",
-  voci: [["Regolamento degli Aranceri a Piedi","Firmato il 9 luglio 2026 dall'Associazione Aranceri a Piedi e dalla Fondazione, approvato all'unanimità da tutte e nove le squadre."],["Carri da getto: regole aggiornate","Il regolamento firmato il 30 giugno 2026 entra in vigore con l'edizione 2027."],["Le arance diventano compost","Dal 16 al 18 ottobre, al Castello e Parco di Masino, ultima distribuzione gratuita del compost ricavato dalle arance della Battaglia 2026."]],
-  link: [["Programma ufficiale","https://www.storicocarnevaleivrea.it/it/Edizione-2027/Programma-2007/"],["Guida ufficiale","https://www.storicocarnevaleivrea.it/it/chi-siamo/guida-ufficiale/"],["Biglietti online","https://www.storicocarnevaleivrea.it/it/Ticketing/Ticket-On-Line/"],["Instagram","https://instagram.com/carnevale_ivrea"]]
-},
 spese: {
   titolo: "Quanto costa",
   lead: "Le voci principali del viaggio. Bere, cene, pranzi, souvenir e gadget dipendono da te.",

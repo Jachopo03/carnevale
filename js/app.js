@@ -60,12 +60,6 @@
       '<p class="msg" id="msg" role="status" aria-live="polite"></p></form>';
   };
 
-  S.novita = function () {
-    var o = D.novita;
-    return head(o) + '<div class="places">' + o.voci.map(function (v) { return '<div class="box"><h3>' + esc(v[0]) + '</h3><p class="note" style="margin:0">' + esc(v[1]) + '</p></div>'; }).join("") + '</div>' +
-      '<p style="margin-top:1.2rem">' + o.link.map(function (l) { return '<a class="btn" href="' + l[1] + '" target="_blank" rel="noopener">' + esc(l[0]) + '</a>'; }).join("") + '</p>';
-  };
-
   S.spese = function () {
     var o = D.spese;
     return head(o) + '<div class="scroll"><table class="costs">' + o.voci.map(function (v) { return '<tr><td>' + esc(v[0]) + '</td><td>' + esc(v[1]) + '</td></tr>'; }).join("") + '</table></div>';
