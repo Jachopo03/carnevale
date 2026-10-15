@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carnevale di Ivrea 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#111111; --muted:#5C5C5C; --red:#C95F00; --red-ink:#fff;
+  --orange:#F28C0F; --card:#FFFFFF; --line:#E4E4E4; --soft:#FFF1E0;
+  --display:"Alfa Slab One",Georgia,"Times New Roman",serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#111;--ink:#fff;--muted:#BDBDBD;--card:#1C1C1C;--line:#333;--soft:#2A1E10;--red:#F28C0F;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#111;--ink:#fff;--muted:#BDBDBD;--card:#1C1C1C;--line:#333;--soft:#2A1E10;--red:#F28C0F;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.0625rem/1.6 var(--body)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.wrap{max-width:1000px;margin:0 auto;padding:0 1.25rem}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1;margin:0}
+h2{font-size:clamp(1.8rem,5vw,2.6rem);margin-bottom:.4rem}
+h3{font-size:1.25rem;margin-bottom:.4rem}
+section{padding:3.5rem 0 1rem}
+.lead{color:var(--muted);max-width:100ch;margin:0 0 1.5rem}
+
+/* hero */
+.hero{background:#0E0E0E;color:#fff;padding:3rem 0 3.5rem;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-90px;bottom:-110px;width:320px;height:320px;border-radius:50%;background:var(--orange)}
+.hero .wrap{position:relative;z-index:1}
+.hero nav{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;font-weight:600;font-size:.95rem;margin-bottom:3rem}
+.hero nav a{text-decoration:none;border-bottom:2px solid transparent}
+.hero nav a:hover{border-color:currentColor}
+.hero h1{font-size:clamp(3rem,13vw,7.5rem);letter-spacing:-.01em}
+.hero p{font-size:1.3rem;max-width:34ch;margin:1.2rem 0 1.6rem}
+.facts{display:flex;flex-wrap:wrap;gap:.6rem}
+.facts span{background:var(--orange);color:#111;border:0;padding:.4rem .9rem;border-radius:999px;font-weight:600}
+
+/* regole */
+.rules{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem}
+.box.red{border-left:6px solid var(--red)}
+.box.warn{border-left:6px solid var(--orange)}
+.box b{display:block;margin-bottom:.2rem}
+.gear{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:1rem}
+.gear .box{background:var(--soft);border:0}
+.gear .em{font-size:2rem;display:block}
+
+/* programma */
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
+.tabs button{font:600 1rem var(--body);padding:.55rem 1rem;border-radius:999px;border:2px solid var(--red);background:transparent;color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--orange);border-color:var(--orange);color:#111}
+.day{display:none;margin:0;padding:0;list-style:none;border-left:3px solid var(--orange)}
+.day.on{display:block}
+.day li{display:flex;gap:1rem;align-items:baseline;padding:.7rem 0 .7rem 1.1rem;border-bottom:1px solid var(--line)}
+.day .t{font-weight:700;min-width:5.2rem;color:var(--red)}
+.day .e{font-size:1.4rem}
+.opt{font-size:.85rem;font-weight:600;background:var(--soft);padding:.05rem .5rem;border-radius:999px;margin-left:.4rem}
+.note{color:var(--muted);font-size:.95rem}
+
+/* spese */
+.costs{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden}
+.costs td{padding:.75rem 1rem;border-bottom:1px solid var(--line)}
+.costs td:last-child{text-align:right;font-weight:700;white-space:nowrap}
+.scroll{overflow-x:auto}
+
+/* luoghi e squadre */
+.places{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.places .box h3{font-size:1.1rem}
+.tag{display:inline-block;background:var(--soft);border-radius:999px;padding:.1rem .6rem;font-size:.9rem;margin:.15rem .25rem .15rem 0}
+table.sq{width:100%;border-collapse:collapse;min-width:480px}
+.sq th,.sq td{text-align:left;padding:.65rem .8rem;border-bottom:1px solid var(--line)}
+.sq th{color:var(--muted);font-weight:600}
+.sq td:nth-child(2){font-weight:700;color:var(--red)}
+
+.feat{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.fcard{border-radius:18px;padding:1.4rem;color:#fff;display:flex;flex-direction:column;gap:.6rem}
+.fcard.picche{background:#111}.fcard.morte{background:#F28C0F;color:#111}
+.fcard svg{width:88px;height:88px}
+.fcard h3{font-size:1.6rem;margin:0}
+.fcard p{margin:0}
+.fcard.morte .me{background:#111;color:#fff}
+.fcard .me{align-self:flex-start;background:#F28C0F;color:#111;font-weight:700;border-radius:999px;padding:.15rem .8rem;font-size:.9rem}
+.sq .hl td{background:var(--soft)}
+.day li.ttl{display:block;font:400 1.25rem var(--display);color:var(--red);border-bottom:0;padding-left:1.1rem}
+.btn{display:inline-block;background:#111;color:#fff;border:2px solid var(--orange);text-decoration:none;font-weight:700;padding:.6rem 1.1rem;border-radius:999px;margin:.3rem .4rem .3rem 0}
+.btn:hover{background:var(--orange);color:#111}
+/* carri e storia */
+.two{display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+blockquote{margin:0 0 1.5rem;padding:1.4rem 1.6rem;background:#111;color:#F28C0F;border:2px solid #F28C0F;border-radius:14px;font-family:var(--display);font-size:clamp(1.2rem,3.4vw,1.7rem);line-height:1.25}
+.story h3{margin-top:1.5rem}
+footer{margin-top:4rem;padding:2rem 0;background:#0E0E0E;color:#ddd;text-align:center;font-size:.95rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <nav aria-label="Sezioni">
+      <a href="#info">Informazioni</a><a href="#programma">Programma</a><a href="#novita">Novità</a><a href="#spese">Spese</a>
+      <a href="#luoghi">Luoghi</a><a href="#nostre">Le nostre</a><a href="#squadre">Squadre</a><a href="#personaggi">Personaggi</a><a href="#carri">Carri</a><a href="#storia">Storia</a>
+    </nav>
+    <h1>Carnevale<br>di Ivrea</h1>
+    <p>Otto secoli di storia. Non uno spettacolo da guardare: una battaglia per la libertà, combattuta a colpi di arance.</p>
+    <div class="facts"><span>Edizione 2027</span><span>Dal 6 gennaio al 10 febbraio</span><span>Il nostro viaggio: 6–9 febbraio</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="info">
+  <h2>Prima di partire</h2>
+  <p class="lead">Poche regole, ma da rispettare. Ad Ivrea il carnevale si vive, e si vive vestiti nel modo giusto.</p>
+  <div class="rules">
+    <div class="box red"><b>Regola 1</b>Indossare sempre il Berretto Frigio.</div>
+    <div class="box red"><b>Regola 2</b>Divertirsi (e ubriacarsi, a piacere).</div>
+    <div class="box warn"><b>Attenzione</b>Usciti dalle mura bisogna fare il giro per rientrare.</div>
+    <div class="box warn"><b>Attenzione</b>Per partecipare al carnevale non è obbligatorio partecipare al tiro delle arance.</div>
+  </div>
+  <h3 style="margin-top:2rem">Cosa mettere in valigia</h3>
+  <div class="gear">
+    <div class="box"><span class="em">🧢</span><b>Berretto Frigio</b>Il cappello rosso a calza: segnala che sei un cittadino neutrale.</div>
+    <div class="box"><span class="em">🥾</span><b>Scarponi</b>Si cammina per ore su strade bagnate e piene di arance.</div>
+    <div class="box"><span class="em">👕</span><b>Vestiti brutti e sporcabili</b>Il succo d'arancia non va più via.</div>
+  </div>
+</section>
+
+<section id="programma">
+  <h2>Programma ufficiale 2027</h2>
+  <p class="lead">Dall'apertura del 6 gennaio al Mercoledì delle Ceneri. Le stelle ★ indicano i giorni del nostro viaggio. Gli orari possono variare.</p>
+  <div class="tabs" role="tablist" aria-label="Giorni"><button role="tab" aria-selected="false" data-d="0">6 gen</button><button role="tab" aria-selected="false" data-d="1">24 gen</button><button role="tab" aria-selected="false" data-d="2">31 gen</button><button role="tab" aria-selected="false" data-d="3">Gio 4</button><button role="tab" aria-selected="true" data-d="4">Sab 6 ★</button><button role="tab" aria-selected="false" data-d="5">Dom 7 ★</button><button role="tab" aria-selected="false" data-d="6">Lun 8 ★</button><button role="tab" aria-selected="false" data-d="7">Mar 9 ★</button><button role="tab" aria-selected="false" data-d="8">Mer 10</button></div>
+  <ul class="day"><li class="ttl">Martedì 6 gennaio · Apertura</li><li><span class="t">08:30</span><span>Ritrovo dei Pifferi e Tamburi in Piazza di Città</span></li><li><span class="t">09:00</span><span>Marcia di apertura dei Pifferi e Tamburi per il centro</span></li><li><span class="t">12:00</span><span>Investitura ufficiale del Generale in Piazza di Città</span></li><li><span class="t">14:00</span><span>Saluto dei Credendari al Magnifico Podestà e Cerimonia del Sale e del Pane</span></li><li><span class="t">15:30</span><span>Corteo delle Componenti da piazza Ottinetti al Duomo</span></li><li><span class="t">16:00</span><span>Santa Messa in Duomo e Cerimonia dei Ceri</span></li></ul>
+  <ul class="day"><li class="ttl">Domenica 24 gennaio · Terzultima domenica</li><li><span class="t">09:00</span><span>Fagiolate a Bellavista e San Giovanni</span></li><li><span class="t">09:15</span><span>Presa in consegna del Libro dei Verbali, in piazza Lamarmora</span></li><li><span class="t">11:30</span><span>Prise du Drapeau in Piazza di Città: inizio ufficiale della Campagna</span></li><li><span class="t">12:30</span><span>Pranzo di apertura del Carnevale</span></li><li><span class="t">14:30</span><span>Alzata degli Abbà, parrocchia per parrocchia (fino alle 16:30)</span></li><li><span class="t">17:00</span><span>Generala in Piazza di Città</span></li></ul>
+  <ul class="day"><li class="ttl">Domenica 31 gennaio · Penultima domenica</li><li><span class="t">09:00</span><span>Fagiolate a Montenavale, Torre Balfredo, Cuj dij Vigne e Santi Pietro e Donato</span></li><li><span class="t">10:00</span><span>Parata dei carri da getto in centro, presentazione in piazza del Rondolino e mercatino degli aranceri in piazza Ottinetti</span></li><li><span class="t">12:00</span><span>Riappacificazione tra i rioni San Maurizio e Borghetto sul Ponte Vecchio</span></li><li><span class="t">12:30</span><span>Pranzo della Croazia in Borghetto</span></li><li><span class="t">14:30</span><span>Alzata degli Abbà</span></li><li><span class="t">17:00</span><span>Generala in Piazza di Città</span></li></ul>
+  <ul class="day"><li class="ttl">Giovedì 4 febbraio · Giovedì Grasso</li><li><span class="t">09:00</span><span>Il Generale visita le scuole di Ivrea</span></li><li><span class="t">14:00</span><span>Passaggio dei poteri in Piazza di Città e calzata del Berretto Frigio</span></li><li><span class="t">14:30</span><span>Salita a cavallo del Generale e marcia del Corteo Storico</span></li><li><span class="t">15:00</span><span>Feste dei bambini in piazza Ottinetti e piazza Maretta</span></li><li><span class="t">16:00</span><span>Apertura della Fagiolata di via Palma</span></li><li><span class="t">17:45</span><span>Generala in Piazza di Città</span></li><li><span class="t">21:00</span><span>Bande e spettacoli in città</span></li></ul>
+  <ul class="day on"><li class="ttl">Sabato 6 febbraio · Sabato di Carnevale</li><li><span class="t">11:00</span><span>Parata della Scorta d'Onore della Mugnaia in piazza Ottinetti</span></li><li><span class="t">15:00</span><span>Un'ora con i Citoyens: passeggiata nei luoghi del Carnevale</span></li><li><span class="t">21:00</span><span>La Vezzosa Mugnaia si presenta dal balcone del Municipio</span></li><li><span class="t">21:30</span><span>Corteo Storico, fiaccolata goliardica e sfilata delle squadre degli aranceri a piedi</span></li><li><span class="t">22:30</span><span>Fuochi d'artificio sul Lungo Dora</span></li><li><span class="t">23:00</span><span>Ballo della Mugnaia e del Generale, poi feste degli aranceri nelle piazze</span></li></ul>
+  <ul class="day"><li class="ttl">Domenica 7 febbraio · Domenica di Carnevale</li><li><span class="t">09:00</span><span>Fagiolate (Castellazzo, San Lorenzo, via Dora Baltea, San Bernardo)</span></li><li><span class="t">10:30</span><span>Preda in Dora sul Ponte Vecchio</span></li><li><span class="t">11:00</span><span>Sfilata dei gruppi ospiti sul Lungo Dora</span></li><li><span class="t">13:00</span><span>Inquadramento dei carri da getto in corso d'Azeglio</span></li><li><span class="t">14:00</span><span>Corteo Storico e inizio della Battaglia delle Arance</span></li><li><span class="t">17:30</span><span>Generala in Piazza di Città</span></li></ul>
+  <ul class="day"><li class="ttl">Lunedì 8 febbraio · Lunedì di Carnevale</li><li><span class="t">09:30</span><span>Zappate degli Scarli (fino alle 11:30)</span></li><li><span class="t">12:30</span><span>Consegna dell'Albero della Libertà in Piazza di Città</span></li><li><span class="t">13:00</span><span>Trofeo Pich e Pala in Piazza di Città: sfida di tiro lungo</span></li><li><span class="t">14:00</span><span>Corteo Storico con visita alle squadre (Asso di Picche e Morte comprese), poi Battaglia delle Arance</span></li><li><span class="t">17:30</span><span>Generala in Piazza di Città</span></li></ul>
+  <ul class="day"><li class="ttl">Martedì 9 febbraio · Martedì di Carnevale</li><li><span class="t">11:00</span><span>Palio degli Aranceri in piazza Ottinetti</span></li><li><span class="t">14:00</span><span>Corteo Storico e Battaglia delle Arance</span></li><li><span class="t">18:00</span><span>Premiazione delle squadre e dei carri da getto in Piazza di Città</span></li><li><span class="t">20:15</span><span>Il Corteo parte per l'abbruciamento degli Scarli</span></li><li><span class="t">21:30</span><span>Scarlo di San Salvatore in Piazza di Città, con la Mugnaia</span></li><li><span class="t">22:15</span><span>Ultimo Scarlo (San Grato) in piazza Lamarmora</span></li><li><span class="t">22:45</span><span>Saluto «Arvédze a giòbia 'n bot» in piazza Ottinetti</span></li><li><span class="t">23:00</span><span>Verbale di chiusura in Piazza di Città</span></li></ul>
+  <ul class="day"><li class="ttl">Mercoledì 10 febbraio · Mercoledì delle Ceneri</li><li><span class="t">11:00</span><span>Polenta e merluzzo in piazza Lamarmora</span></li></ul>
+</section>
+
+<section id="novita">
+  <h2>Dal sito ufficiale</h2>
+  <p class="lead">Le ultime notizie della Fondazione dello Storico Carnevale di Ivrea.</p>
+  <div class="places">
+    <div class="box"><h3>Regolamento degli Aranceri a Piedi</h3><p class="note" style="margin:0">Firmato il 9 luglio 2026 dall'Associazione Aranceri a Piedi e dalla Fondazione, approvato all'unanimità da tutte e nove le squadre.</p></div>
+    <div class="box"><h3>Carri da getto: regole aggiornate</h3><p class="note" style="margin:0">Il regolamento firmato il 30 giugno 2026 entra in vigore con l'edizione 2027.</p></div>
+    <div class="box"><h3>Le arance diventano compost</h3><p class="note" style="margin:0">Dal 16 al 18 ottobre, al Castello e Parco di Masino, ultima distribuzione gratuita del compost ricavato dalle arance della Battaglia 2026.</p></div>
+  </div>
+  <p style="margin-top:1.2rem">
+    <a class="btn" href="https://www.storicocarnevaleivrea.it/it/Edizione-2027/Programma-2007/">Programma ufficiale</a>
+    <a class="btn" href="https://www.storicocarnevaleivrea.it/it/chi-siamo/guida-ufficiale/">Guida ufficiale</a>
+    <a class="btn" href="https://www.storicocarnevaleivrea.it/it/Ticketing/Ticket-On-Line/">Biglietti online</a>
+    <a class="btn" href="https://instagram.com/carnevale_ivrea">Instagram</a>
+  </p>
+</section>
+
+<section id="spese">
+  <h2>Quanto costa</h2>
+  <p class="lead">Le voci principali del viaggio. Bere, cene, pranzi, souvenir e gadget dipendono da te.</p>
+  <div class="scroll">
+  <table class="costs">
+    <tr><td>Casa</td><td>35 € a notte</td></tr>
+    <tr><td>Viaggio in macchina</td><td>circa 15 €</td></tr>
+    <tr><td>Biglietto d'ingresso (solo domenica)</td><td>11 € online · 15 € sul posto</td></tr>
+    <tr><td>Berretto Frigio</td><td>6 € / 8 €</td></tr>
+    <tr><td>Iscrizione squadra</td><td>minimo 100 €</td></tr>
+  </table>
+  </div>
+</section>
+
+<section id="luoghi">
+  <h2>Luoghi importanti</h2>
+  <p class="lead">Ogni piazza ha la sua squadra e la sua funzione.</p>
+  <div class="places">
+    <div class="box"><h3>Vecchio Ponte</h3><span class="tag">Preda in Dora</span></div>
+    <div class="box"><h3>Piazza Gioberti</h3><span class="tag">Ingresso 3</span><span class="tag">Fagiolata</span></div>
+    <div class="box"><h3>Piazza di Città</h3><p class="note" style="margin:0 0 .3rem">Picche e Morte</p><span class="tag">Mugnaia</span><span class="tag">Trofeo</span><span class="tag">Premiazione</span><span class="tag">Scarlo</span></div>
+    <div class="box"><h3>Piazza Ottinetti</h3><p class="note" style="margin:0 0 .3rem">Scacchi e Arduini</p><span class="tag">I peggiori</span></div>
+    <div class="box"><h3>Borghetto</h3><p class="note" style="margin:0 0 .3rem">Tuchini</p><span class="tag">Ingresso 1/2</span><span class="tag">Stazione</span></div>
+    <div class="box"><h3>Piazza Freguglia</h3><p class="note" style="margin:0 0 .3rem">Diavoli e Credendari</p><span class="tag">Diavolandia</span></div>
+    <div class="box"><h3>Piazza Rondolino</h3><p class="note" style="margin:0 0 .3rem">Mercenari e Pantere</p><span class="tag">Parco con cibo</span></div>
+  </div>
+</section>
+
+<section id="nostre">
+  <h2>Le squadre del cuore</h2>
+  <p class="lead">Due squadre, una sola piazza: in Piazza di Città si sfidano Picche e Morte.</p>
+  <div class="feat">
+    <div class="fcard picche">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path fill="#F28C0F" d="M50 8C50 8 12 38 12 60c0 14 11 22 22 22 6 0 11-2 14-6-1 8-4 14-10 18h24c-6-4-9-10-10-18 3 4 8 6 14 6 11 0 22-8 22-22C88 38 50 8 50 8z"/></svg>
+      <span class="me">Dove tira il mio migliore amico</span>
+      <h3>Aranceri Asso di Picche</h3>
+      <p>Fondata nel 1947: la più antica tra le nove squadre a terra. Tira in Piazza di Città.</p>
+    </div>
+    <div class="fcard morte">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path fill="#111" d="M50 8C28 8 14 24 14 44c0 12 5 20 12 25v14h12v-8h8v8h8v-8h8v8h12V69c7-5 12-13 12-25C86 24 72 8 50 8z"/><circle cx="36" cy="46" r="9" fill="#F28C0F"/><circle cx="64" cy="46" r="9" fill="#F28C0F"/><path d="M50 56l-5 10h10z" fill="#F28C0F"/></svg>
+      <span class="me">La mia squadra</span>
+      <h3>Aranceri della Morte</h3>
+      <p>Fondata nel 1954. Anche loro tirano in Piazza di Città, la piazza di Mugnaia, Trofeo, Premiazione e Scarlo.</p>
+    </div>
+  </div>
+</section>
+
+<section id="squadre">
+  <h2>Le nove squadre a terra</h2>
+  <p class="lead">Ogni squadra difende una piazza o un rione e affronta i carri a turno.</p>
+  <div class="scroll">
+  <table class="sq">
+    <thead><tr><th>Squadra</th><th>Fondata</th><th>Zona di tiro</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>Aranceri Asso di Picche</td><td>1947</td><td>Piazza di Città</td></tr>
+      <tr class="hl"><td>Aranceri della Morte</td><td>1954</td><td>Piazza di Città</td></tr>
+      <tr><td>Aranceri Tuchini del Borghetto</td><td>1964</td><td>Rione Borghetto</td></tr>
+      <tr><td>Aranceri Scacchi</td><td>1964</td><td>Piazza Ottinetti</td></tr>
+      <tr><td>Aranceri Scorpioni d'Arduino</td><td>1966</td><td>Piazza Ottinetti</td></tr>
+      <tr><td>Aranceri Pantera Nera</td><td>1966</td><td>Piazza Rondolino</td></tr>
+      <tr><td>Diavoli Aranceri</td><td>1973</td><td>Piazza Freguglia</td></tr>
+      <tr><td>Aranceri Mercenari</td><td>1974</td><td>Piazza Rondolino</td></tr>
+      <tr><td>Credendari Aranceri</td><td>1985</td><td>Piazza Freguglia</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="personaggi">
+  <h2>I personaggi</h2>
+  <p class="lead">Il Carnevale è anche un cerimoniale con i suoi ruoli, tutti visibili nel programma.</p>
+  <div class="places">
+    <div class="box"><h3>Il Generale</h3><p class="note" style="margin:0">Il Giovedì Grasso il Sindaco gli affida simbolicamente i poteri civili della piazza. Guida lo Stato Maggiore.</p></div>
+    <div class="box"><h3>La Vezzosa Mugnaia</h3><p class="note" style="margin:0">Si presenta dal balcone del Municipio il sabato sera. I fuochi d'artificio sono in suo onore.</p></div>
+    <div class="box"><h3>Il Magnifico Podestà</h3><p class="note" style="margin:0">La domenica getta una pietra nella Dora: è la Preda in Dora, rifiuto di ogni tirannia.</p></div>
+    <div class="box"><h3>Gli Abbà</h3><p class="note" style="margin:0">I piccoli priori delle cinque parrocchie cittadine, festeggiati con l'Alzata.</p></div>
+    <div class="box"><h3>Pifferi e Tamburi</h3><p class="note" style="margin:0">Aprono il Carnevale il 6 gennaio e suonano la Generala in Piazza di Città.</p></div>
+  </div>
+</section>
+
+<section id="carri">
+  <h2>I carri da getto</h2>
+  <div class="two">
+    <div>
+      <p>A differenza delle squadre a piedi, ancorate a un rione o a una piazza, i carri <b>sfilano continuamente lungo un percorso cittadino</b> e affrontano a turno tutte le 9 squadre a terra.</p>
+      <h3>Due categorie</h3>
+      <p><b>Pariglie</b>, a 2 cavalli: ospitano di solito da 10 a 12 aranceri.<br><b>Tiri a quattro</b>, a 4 cavalli: carri più grandi, con 12-15 aranceri.</p>
+    </div>
+    <div>
+      <h3>Com'è fatto un carro</h3>
+      <p><b>I tiratori</b> sono le guardie del tiranno: protezioni in cuoio e pesanti maschere di ferro con grata per difendersi dai colpi a raffica delle piazze.</p>
+      <p><b>I conducenti e i capocarro</b> guidano nel caos con precisione, per tutelare cavalli e folla.</p>
+      <p><b>La vestizione</b>: decorazione artigianale in legno e pittura, con stemma, nome storico e colori.</p>
+    </div>
+  </div>
+</section>
+
+<section id="storia" class="story">
+  <h2>La storia</h2>
+  <blockquote>Ad Ivrea non si festeggia il Carnevale: lo si vive. E non si assiste a uno spettacolo: si combatte una guerra per la libertà.</blockquote>
+  <p>Il Carnevale di Ivrea è una delle feste più antiche e uniche al mondo. Non è una sfilata di coriandoli, ma la rievocazione storica di una <b>vera rivolta popolare contro l'oppressione</b>.</p>
+
+  <h3>🗡️ Violetta e la testa del tiranno</h3>
+  <p>Nel Medioevo la città era schiacciata dal potere di un tiranno spietato, il Marchese Ranieri di Biandrate, che pretendeva lo <i>Ius Primae Noctis</i> su tutte le giovani spose. A spezzare la catena di soprusi fu <b>Violetta</b>, figlia di un mugnaio. La notte delle nozze finse di sottomettersi, condusse il tiranno nel castello, lo fece ubriacare e gli tagliò la testa con una spada nascosta. Mostrata la testa dal balcone, il popolo insorse e rase al suolo il castello, giurando che nessun tiranno avrebbe più dominato Ivrea.</p>
+
+  <h3>🍊 La Battaglia delle Arance</h3>
+  <p>È la rappresentazione dal vivo di quel giorno di rivolta.</p>
+  <ul>
+    <li><b>I tiratori a terra</b> sono il popolo: combattono a viso scoperto, senza maschere né protezioni pesanti.</li>
+    <li><b>I tiratori sui carri</b> sono le guardie del tiranno: indossano cuoio e maschere di ferro.</li>
+    <li><b>Le arance</b> simboleggiano i frutti sottratti dal feudatario e la testa mozza del tiranno.</li>
+  </ul>
+
+  <h3>🔴 Il Berretto Frigio</h3>
+  <p>Nei giorni di festa chiunque scenda in strada deve indossarlo. Nato nella Rivoluzione Francese sul modello del cappello degli schiavi liberati nell'antica Roma, ad Ivrea è simbolo di <b>neutralità e rispetto</b>: dice che sei un cittadino libero e ti protegge, almeno in teoria, dal tiro diretto delle arance mentre ti sposti tra le piazze.</p>
+</section>
+
+</main>
+
+<footer><div class="wrap">Sito non ufficiale, fatto da un aranciere per gli amici. Il programma è tratto da <a href="https://www.storicocarnevaleivrea.it/it/home/">storicocarnevaleivrea.it</a> (Fondazione dello Storico Carnevale di Ivrea, Palazzo della Credenza, Ivrea). Indossa il berretto, sporcati, divertiti.</div></footer>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll('.tabs button'),days=document.querySelectorAll('.day');
+  tabs.forEach(function(b){
+    b.addEventListener('click',function(){
+      var d=+b.dataset.d;
+      tabs.forEach(function(x,i){x.setAttribute('aria-selected',i===d?'true':'false');days[i].classList.toggle('on',i===d)});
+    });
+  });
+})();
+</script>
+</body>
+</html>
