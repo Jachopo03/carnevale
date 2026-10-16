@@ -67,24 +67,65 @@
 
   S.luoghi = function () {
     var o = D.luoghi;
-    return head(o) + '<div class="places">' + o.voci.map(function (v) {
-      return '<div class="box"><h3>' + esc(v[0]) + '</h3>' + (v[1] ? '<p class="note" style="margin:0 0 .3rem">' + esc(v[1]) + '</p>' : '') +
-        v[2].map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join("") + '</div>';
+    var imgHtml = o.immagine ? '<img src="' + o.immagine + '" alt="' + esc(o.titolo) + '" style="width:100%; border-radius:8px; margin: 1rem 0;">' : '';
+    return head(o) + imgHtml + '<div class="places">' + o.voci.map(function (v, index) {
+      var query = encodeURIComponent(v[0] + ", Ivrea, Italy");
+      var gmaps = "https://www.google.com/maps/search/?api=1&query=" + query;
+      var apple = "https://maps.apple.com/?q=" + query;
+      var tagsHtml = v[2].map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join("");
+      var boxId = "luogo-menu-" + index;
+      var mapMenu = '<div id="' + boxId + '" style="display: none; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(0,0,0,0.1); flex-direction: column; gap: 0.4rem; font-size: 0.9rem;">' +
+        '<span style="font-weight: bold; font-size: 0.8rem; opacity: 0.8;">Apri con:</span>' +
+        '<div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">' +
+          '<a href="' + gmaps + '" target="_blank" rel="noopener noreferrer" style="background: #f1f3f4; color: #333; padding: 4px 10px; border-radius: 4px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">' +
+            '<img src="https://img.icons8.com/?size=100&id=svxMiuKxGwZ3&format=png&color=000000" alt="Google Maps" style="width: 18px; height: 18px;"> Google Maps' +
+          '</a>' +
+          '<a href="' + apple + '" target="_blank" rel="noopener noreferrer" style="background: #f1f3f4; color: #333; padding: 4px 10px; border-radius: 4px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">' +
+            '<img src="https://img.icons8.com/?size=100&id=9c6iBQaxdDK8&format=png&color=000000" alt="Apple Maps" style="width: 18px; height: 18px;"> Apple Maps' +
+          '</a>' +
+        '</div>' +
+      '</div>';
+
+      return '<div class="box" onclick="var m = document.getElementById(\'' + boxId + '\'); m.style.display = m.style.display === \'flex\' ? \'none\' : \'flex\';" style="cursor: pointer; position: relative;">' +
+        '<h3>' + esc(v[0]) + '</h3>' + 
+        (v[1] ? '<p class="note" style="margin:0 0 .3rem">' + esc(v[1]) + '</p>' : '') +
+        tagsHtml + 
+        mapMenu +
+      '</div>';
     }).join("") + '</div>';
   };
 
-  S.nostre = function () {
+  /*S.nostre = function () {
     var o = D.nostre, p = o.picche, m = o.morte;
     var card = function (cls, svg, x) { return '<div class="fcard ' + cls + '">' + svg + '<span class="me">' + esc(x.etichetta) + '</span><h3>' + esc(x.nome) + '</h3><p>' + esc(x.testo) + '</p></div>'; };
     var svgP = '<svg viewBox="0 0 100 100" aria-hidden="true"><path fill="#F28C0F" d="M50 8C50 8 12 38 12 60c0 14 11 22 22 22 6 0 11-2 14-6-1 8-4 14-10 18h24c-6-4-9-10-10-18 3 4 8 6 14 6 11 0 22-8 22-22C88 38 50 8 50 8z"/></svg>';
     var svgM = '<svg viewBox="0 0 100 100" aria-hidden="true"><path fill="#111" d="M50 8C28 8 14 24 14 44c0 12 5 20 12 25v14h12v-8h8v8h8v-8h8v8h12V69c7-5 12-13 12-25C86 24 72 8 50 8z"/><circle cx="36" cy="46" r="9" fill="#F28C0F"/><circle cx="64" cy="46" r="9" fill="#F28C0F"/><path d="M50 56l-5 10h10z" fill="#F28C0F"/></svg>';
     return head(o) + '<div class="feat">' + card("picche", svgP, p) + card("morte", svgM, m) + '</div>';
-  };
+  };*/
 
   S.squadre = function () {
     var o = D.squadre;
     return head(o) + '<div class="scroll"><table class="sq"><thead><tr><th>Squadra</th><th>Fondata</th><th>Zona di tiro</th></tr></thead><tbody>' +
-      o.righe.map(function (r) { return '<tr' + (r[3] ? ' class="hl"' : '') + '><td>' + esc(r[0]) + '</td><td>' + r[1] + '</td><td>' + esc(r[2]) + '</td></tr>'; }).join("") + '</tbody></table></div>';
+      o.righe.map(function (r) {
+        var nomeSquadra = r[0];
+        var anno = r[1];
+        var zona = r[2];
+        var evidenziata = r[3];
+        var logoPath = r[4];
+        var linkSito = r[5];
+        var logoHtml = logoPath ? '<img src="' + logoPath + '" alt="" style="width: 24px; height: 24px; object-fit: contain; margin-right: 8px; vertical-align: middle;">' : '';
+        var nomeCell = logoHtml + esc(nomeSquadra);
+        if (linkSito) {
+          nomeCell = '<a href="' + linkSito + '" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center;">' + logoHtml + esc(nomeSquadra) + '</a>';
+        } else {
+          nomeCell = '<span style="display: inline-flex; align-items: center;">' + logoHtml + esc(nomeSquadra) + '</span>';
+        }
+        return '<tr' + (evidenziata ? ' class="hl"' : '') + '>' +
+          '<td>' + nomeCell + '</td>' +
+          '<td>' + anno + '</td>' +
+          '<td>' + esc(zona) + '</td>' +
+        '</tr>';
+      }).join("") + '</tbody></table></div>';
   };
 
   S.personaggi = function () {
