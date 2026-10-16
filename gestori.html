@@ -85,7 +85,7 @@ table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--car
   function login(){
     $("err").textContent="";
     sb.auth.signInWithPassword({email:$("u").value.trim(),password:$("p").value}).then(function(r){
-      if(r.error)$("err").textContent="Email o password non corretti.";
+      if(r.error)$("err").textContent="Errore: "+r.error.message+(r.error.status?" ("+r.error.status+")":"");
     });
   }
   $("go").onclick=login;
