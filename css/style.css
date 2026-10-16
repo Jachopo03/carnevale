@@ -114,3 +114,10 @@ blockquote{margin:0 0 1.5rem;padding:1.4rem 1.6rem;background:#111;color:#F28C0F
 .story h3{margin-top:1.5rem}
 footer{margin-top:4rem;padding:2rem 0;background:#0E0E0E;color:#ddd;text-align:center;font-size:.95rem}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* photo */
+.pbox{padding:0;overflow:hidden}
+.pbox h3,.pbox p{padding:0 1.2rem}
+.pbox h3{padding-top:1rem}
+.pbox p{padding-bottom:1.1rem}
+.pf{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;margin-bottom:.2rem}

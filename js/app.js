@@ -30,7 +30,7 @@
     var o = D.info;
     return head(o) + '<div class="rules">' + o.regole.map(function (r) { return '<div class="box ' + r[0] + '"><b>' + esc(r[1]) + '</b>' + esc(r[2]) + '</div>'; }).join("") + '</div>' +
       '<h3 style="margin-top:2rem">Cosa mettere in valigia</h3><div class="gear">' +
-      o.valigia.map(function (g) { return '<div class="box"><span class="em">' + g[0] + '</span><b>' + esc(g[1]) + '</b>' + esc(g[2]) + '</div>'; }).join("") + '</div>';
+      o.valigia.map(function (g) { return '<div class="box"><img src="' + g[0] + '" alt="" style="width: 32px; height: 32px; object-fit: contain; margin-bottom: 0.5rem; display: block;"><b>' + esc(g[1]) + '</b>' + esc(g[2]) + '</div>'; }).join("") + '</div>';
   };
 
   S.programma = function () {
@@ -68,13 +68,18 @@
   S.luoghi = function () {
     var o = D.luoghi;
     var imgHtml = o.immagine ? '<img src="' + o.immagine + '" alt="' + esc(o.titolo) + '" style="width:100%; border-radius:8px; margin: 1rem 0;">' : '';
+    
     return head(o) + imgHtml + '<div class="places">' + o.voci.map(function (v, index) {
-      var query = encodeURIComponent(v[0] + ", Ivrea, Italy");
-      var gmaps = "https://www.google.com/maps/search/?api=1&query=" + query;
-      var apple = "https://maps.apple.com/?q=" + query;
+      var queryApple = (v[0] === "Piazza di Città") ? "Piazza Ferruccio Nazionale, Ivrea, Italy" : (v[0] + ", Ivrea, Italy");
+      var queryGmaps = v[0] + ", Ivrea, Italy";
+
+      var gmaps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(queryGmaps);
+      var apple = "https://maps.apple.com/?q=" + encodeURIComponent(queryApple);
+
       var tagsHtml = v[2].map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join("");
       var boxId = "luogo-menu-" + index;
-      var mapMenu = '<div id="' + boxId + '" style="display: none; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(0,0,0,0.1); flex-direction: column; gap: 0.4rem; font-size: 0.9rem;">' +
+
+      var mapMenu = '<div id="' + boxId + '" style="display: none; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(0,0,0,0.1); flex-direction: column; gap: 0.4rem; font-size: 0.9rem;" onclick="event.stopPropagation();">' +
         '<span style="font-weight: bold; font-size: 0.8rem; opacity: 0.8;">Apri con:</span>' +
         '<div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">' +
           '<a href="' + gmaps + '" target="_blank" rel="noopener noreferrer" style="background: #f1f3f4; color: #333; padding: 4px 10px; border-radius: 4px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">' +
@@ -130,7 +135,12 @@
 
   S.personaggi = function () {
     var o = D.personaggi;
-    return head(o) + '<div class="places">' + o.voci.map(function (v) { return '<div class="box"><h3>' + esc(v[0]) + '</h3><p class="note" style="margin:0">' + esc(v[1]) + '</p></div>'; }).join("") + '</div>';
+    return head(o) + '<div class="places">' + o.voci.map(function (v) {
+      var img = v[2]
+        ? '<img class="pf" src="' + v[2] + '" alt="' + esc(v[0]) + '" loading="lazy" onerror="this.remove()">'
+        : '';
+      return '<div class="box pbox">' + img + '<h3>' + esc(v[0]) + '</h3><p class="note" style="margin:0">' + esc(v[1]) + '</p></div>';
+    }).join("") + '</div>';
   };
 
   S.carri = function () { var o = D.carri; return '<h2>' + esc(o.titolo) + '</h2><div class="two"><div>' + o.sx + '</div><div>' + o.dx + '</div></div>'; };

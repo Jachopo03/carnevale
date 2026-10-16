@@ -11,7 +11,11 @@ info: {
   titolo: "Prima di partire",
   lead: "Poche informazioni, ma da rispettare. Ad Ivrea il carnevale si vive, e si vive vestiti nel modo giusto.",
   regole: [["red","Regole","Indossare sempre il Berretto Frigio. Divertirsi (e ubriacarsi, a piacere)"],["warn","Attenzione","Usciti dalle mura bisogna fare il giro per rientrare."],["warn","Attenzione","Per partecipare al carnevale non è obbligatorio partecipare al tiro delle arance."]],
-  valigia: [["🧢","Berretto Frigio","Il cappello rosso a calza: segnala che sei un cittadino neutrale."],["🥾","Scarponi","Si cammina per ore su strade bagnate e piene di arance."],["👕","Vestiti brutti e sporcabili","Il succo d'arancia non va più via."]]
+  valigia: [
+    ["img/cappello.png", "Berretto Frigio", "Il cappello rosso a calza: segnala che sei un cittadino neutrale."],
+    ["img/scarponi.png", "Scarponi", "Si cammina per ore su strade bagnate e piene di arance."],
+    ["img/vestiti.png", "Vestiti brutti e sporcabili", "Il succo d'arancia non va più via."]
+  ]
 },
 programma: {
   titolo: "Programma ufficiale 2027",
@@ -69,7 +73,13 @@ squadre: {
 personaggi: {
   titolo: "I personaggi",
   lead: "Il Carnevale è anche un cerimoniale con i suoi ruoli, tutti visibili nel programma.",
-  voci: [["Il Generale","Il Giovedì Grasso il Sindaco gli affida simbolicamente i poteri civili della piazza. Guida lo Stato Maggiore."],["La Vezzosa Mugnaia","Si presenta dal balcone del Municipio il sabato sera. I fuochi d'artificio sono in suo onore."],["Il Magnifico Podestà","La domenica getta una pietra nella Dora: è la Preda in Dora, rifiuto di ogni tirannia."],["Gli Abbà","I piccoli priori delle cinque parrocchie cittadine, festeggiati con l'Alzata."],["Pifferi e Tamburi","Aprono il Carnevale il 6 gennaio e suonano la Generala in Piazza di Città."]]
+  voci: [
+    ["Il Generale","Il Giovedì Grasso il Sindaco gli affida simbolicamente i poteri civili della piazza. Guida lo Stato Maggiore.","img/generale.png"],
+    ["La Vezzosa Mugnaia","Si presenta dal balcone del Municipio il sabato sera. I fuochi d'artificio sono in suo onore.","img/mugnaia.png"],
+    ["Il Magnifico Podestà","La domenica getta una pietra nella Dora: è la Preda in Dora, rifiuto di ogni tirannia.","img/podesta.png"],
+    ["Gli Abbà","I piccoli priori delle cinque parrocchie cittadine, festeggiati con l'Alzata.","img/abba.png"],
+    ["Pifferi e Tamburi","Aprono il Carnevale il 6 gennaio e suonano la Generala in Piazza di Città.","img/pifferi-e-tamburi.png"]
+  ]
 },
 carri: {
   titolo: "I carri da getto",
