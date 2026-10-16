@@ -74,11 +74,11 @@ personaggi: {
   titolo: "I personaggi",
   lead: "Il Carnevale è anche un cerimoniale con i suoi ruoli, tutti visibili nel programma.",
   voci: [
-    ["Il Generale","Il Giovedì Grasso il Sindaco gli affida simbolicamente i poteri civili della piazza. Guida lo Stato Maggiore.","img/generale.png"],
-    ["La Vezzosa Mugnaia","Si presenta dal balcone del Municipio il sabato sera. I fuochi d'artificio sono in suo onore.","img/mugnaia.png"],
-    ["Il Magnifico Podestà","La domenica getta una pietra nella Dora: è la Preda in Dora, rifiuto di ogni tirannia.","img/podesta.png"],
-    ["Gli Abbà","I piccoli priori delle cinque parrocchie cittadine, festeggiati con l'Alzata.","img/abba.png"],
-    ["Pifferi e Tamburi","Aprono il Carnevale il 6 gennaio e suonano la Generala in Piazza di Città.","img/pifferi-e-tamburi.png"]
+    ["Il Generale","Il Giovedì Grasso il Sindaco gli affida simbolicamente i poteri civili della piazza. Guida lo Stato Maggiore.","img/generale.jpg"],
+    ["La Vezzosa Mugnaia","Si presenta dal balcone del Municipio il sabato sera. I fuochi d'artificio sono in suo onore.","img/mugnaia.jpg"],
+    ["Il Magnifico Podestà","La domenica getta una pietra nella Dora: è la Preda in Dora, rifiuto di ogni tirannia.","img/podesta.jpg"],
+    ["Gli Abbà","I piccoli priori delle cinque parrocchie cittadine, festeggiati con l'Alzata.","img/abba.jpg"],
+    ["Pifferi e Tamburi","Aprono il Carnevale il 6 gennaio e suonano la Generala in Piazza di Città.","img/pifferi-tamburi.jpg"]
   ]
 },
 carri: {
