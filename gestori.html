@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Area Gestori · Carnevale di Ivrea 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+.ghead{background:#0E0E0E;color:#fff;padding:calc(env(safe-area-inset-top,0px) + 1.6rem) 0 1.6rem;border-bottom:2px solid var(--orange)}
+.ghead h1{font-size:clamp(1.8rem,7vw,3rem)}
+.ghead p{margin:.4rem 0 0;color:var(--orange);font-weight:600}
+#login{max-width:400px;margin:3rem auto}
+#login label,.rsvp label.f{display:block;font-weight:600;margin:.8rem 0 .2rem}
+#login input{width:100%;font:inherit;padding:.6rem .8rem;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:1.5rem}
+table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--card)}
+.g th,.g td{padding:.7rem .8rem;border:1px solid var(--line);text-align:left;vertical-align:top}
+.g th{background:var(--soft);font-family:var(--display);font-weight:400}
+.g ul{list-style:none;margin:0;padding:0}.g li{padding:.15rem 0}
+.n{color:var(--muted);font-weight:400}
+.empty{color:var(--muted);font-style:italic}
+.tag{display:inline-block;background:var(--soft);border-radius:999px;padding:0 .55rem;font-size:.85rem;margin-left:.3rem}
+.ghost{background:transparent;color:var(--ink)}
+.ghost:hover{color:#111}
+</style>
+</head>
+<body>
+<header class="ghead"><div class="wrap"><h1>Area Gestori</h1><p>Carnevale di Ivrea 2027 · 6–9 febbraio</p></div></header>
+
+<main class="wrap">
+  <section id="login" class="rsvp">
+    <h2 style="font-size:1.6rem">Accedi</h2>
+    <label for="u">Email</label><input id="u" type="email" autocomplete="username" autocapitalize="none">
+    <label for="p">Password</label><input id="p" type="password" autocomplete="current-password">
+    <p class="msg err" id="err" role="alert"></p>
+    <button class="btn" id="go" type="button">Entra</button>
+  </section>
+
+  <div id="app" hidden>
+    <div class="topbar">
+      <span class="note" id="sync"></span>
+      <span><button class="btn ghost" id="ref" type="button">Aggiorna</button><button class="btn ghost" id="out" type="button">Esci</button></span>
+    </div>
+
+    <section>
+      <h2>Presenze per giorno</h2>
+      <p class="lead">Chi ha risposto «Sì» a ogni giorno del viaggio.</p>
+      <div class="scroll"><table class="g"><thead><tr id="dh"></tr></thead><tbody><tr id="dc"></tr></tbody></table></div>
+    </section>
+
+    <section>
+      <h2>Chi tira e chi no</h2>
+      <p class="lead" id="tot"></p>
+      <div class="scroll"><table class="g">
+        <thead><tr><th>🍊 Tirano <span class="n" id="ct"></span></th><th>🚫 Non tirano <span class="n" id="cn"></span></th></tr></thead>
+        <tbody><tr><td id="yes"></td><td id="no"></td></tr></tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <h2>Non vengono</h2>
+      <p class="lead" id="nov"></p>
+    </section>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script>
+(function(){
+  var C=window.CONFIG,TABLE=C.TABLE||"partecipazioni";
+  // Stessi codici giorno usati dal modulo del sito (data.js → partecipa.giorni)
+  var DAYS=[["sab","Sabato","6 feb"],["dom","Domenica","7 feb"],["lun","Lunedì","8 feb"],["mar","Martedì","9 feb"]];
+  var $=function(i){return document.getElementById(i)},rows=[];
+  var sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY);
+
+  function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+  function full(p){return (p.nome+" "+p.cognome).trim()}
+  function byName(a,b){return full(a).localeCompare(full(b),"it")}
+
+  function login(){
+    $("err").textContent="";
+    sb.auth.signInWithPassword({email:$("u").value.trim(),password:$("p").value}).then(function(r){
+      if(r.error)$("err").textContent="Email o password non corretti.";
+    });
+  }
+  $("go").onclick=login;
+  $("u").onkeydown=$("p").onkeydown=function(e){if(e.key==="Enter")login()};
+  $("out").onclick=function(){sb.auth.signOut()};
+  $("ref").onclick=load;
+
+  sb.auth.onAuthStateChange(function(_e,s){
+    $("login").hidden=!!s;$("app").hidden=!s;
+    if(s){$("p").value="";load()}else rows=[];
+  });
+
+  function load(){
+    $("sync").textContent="Caricamento…";
+    sb.from(TABLE).select("nome,cognome,partecipa,durata,giorni,tira").then(function(r){
+      if(r.error){$("sync").textContent="Errore: "+r.error.message;return}
+      rows=r.data||[];
+      $("sync").textContent="Aggiornato alle "+new Date().toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
+      render();
+    });
+  }
+
+  function list(arr,extra){
+    if(!arr.length)return el("span","empty","Nessuno");
+    var ul=el("ul");
+    arr.forEach(function(p){
+      var li=el("li",null,full(p));
+      var x=extra&&extra(p);if(x){li.appendChild(document.createTextNode(" "));li.appendChild(x)}
+      ul.appendChild(li);
+    });
+    return ul;
+  }
+
+  function render(){
+    var yes=rows.filter(function(p){return p.partecipa}),no=rows.filter(function(p){return !p.partecipa});
+    var dh=$("dh"),dc=$("dc");dh.innerHTML="";dc.innerHTML="";
+    DAYS.forEach(function(d){
+      var l=yes.filter(function(p){return (p.giorni||[]).indexOf(d[0])>-1}).sort(byName);
+      var th=el("th",null,d[1]+" ");th.appendChild(el("span","n","("+l.length+")"));
+      th.appendChild(document.createElement("br"));th.appendChild(el("span","n",d[2]));dh.appendChild(th);
+      var td=el("td");
+      td.appendChild(list(l,function(p){return p.tira?null:el("span","tag","non tira")}));
+      dc.appendChild(td);
+    });
+
+    var t=yes.filter(function(p){return p.tira}).sort(byName),nt=yes.filter(function(p){return !p.tira}).sort(byName);
+    function giorni(p){return el("span","n","— "+(p.giorni||[]).map(function(g){
+      return DAYS.filter(function(d){return d[0]===g})[0][2].split(" ")[0]+" feb";}).join(", "))}
+    $("ct").textContent="("+t.length+")";$("cn").textContent="("+nt.length+")";
+    $("yes").innerHTML="";$("yes").appendChild(list(t,giorni));
+    $("no").innerHTML="";$("no").appendChild(list(nt,giorni));
+    $("tot").textContent=yes.length+" partecipanti su "+rows.length+" risposte.";
+    $("nov").textContent=no.length?no.sort(byName).map(full).join(", "):"Nessuno ha risposto «No».";
+  }
+})();
+</script>
+</body>
+</html>

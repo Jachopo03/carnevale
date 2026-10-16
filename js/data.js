@@ -47,8 +47,8 @@ luoghi: {
 nostre: {
   titolo: "Le squadre del cuore",
   lead: "Due squadre, una sola piazza: in Piazza di Città si sfidano Picche e Morte.",
-  picche: {etichetta:"Dove tira il mio migliore amico",nome:"Aranceri Asso di Picche",testo:"Fondata nel 1947: la più antica tra le nove squadre a terra. Tira in Piazza di Città."},
-  morte: {etichetta:"La mia squadra",nome:"Aranceri della Morte",testo:"Fondata nel 1954. Anche loro tirano in Piazza di Città, la piazza di Mugnaia, Trofeo, Premiazione e Scarlo."}
+  picche: {etichetta:"Dove tira Enri",nome:"Aranceri Asso di Picche",testo:"Fondata nel 1947: la più antica tra le nove squadre a terra. Tira in Piazza di Città."},
+  morte: {etichetta:"Dove tira Jacho",nome:"Aranceri della Morte",testo:"Fondata nel 1954. Anche loro tirano in Piazza di Città, la piazza di Mugnaia, Trofeo, Premiazione e Scarlo."}
 },
 squadre: {
   titolo: "Le nove squadre a terra",
