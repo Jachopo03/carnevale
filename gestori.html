@@ -25,6 +25,8 @@ table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--car
 .n{color:var(--muted);font-weight:400}
 .empty{color:var(--muted);font-style:italic}
 .tag{display:inline-block;background:var(--soft);border-radius:999px;padding:0 .55rem;font-size:.85rem;margin-left:.3rem}
+.del select{width:100%;font:inherit;padding:.6rem .8rem;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.del .btn:disabled{opacity:.4;cursor:not-allowed}
 .ghost{background:transparent;color:var(--ink)}
 .ghost:hover{color:#111}
 </style>
@@ -66,6 +68,22 @@ table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--car
       <h2>Non vengono</h2>
       <p class="lead" id="nov"></p>
     </section>
+
+    <section>
+      <h2>Elimina una persona</h2>
+      <p class="lead">Scegli il nome. Se più persone hanno lo stesso nome, scegli anche il cognome.</p>
+      <div class="rsvp del">
+        <label class="f" for="dn">Nome</label>
+        <select id="dn"></select>
+        <div id="dsw" hidden>
+          <label class="f" for="ds">Cognome</label>
+          <select id="ds"></select>
+        </div>
+        <p class="note" id="dinfo" style="margin:.8rem 0 0"></p>
+        <p style="margin:1rem 0 0"><button class="btn" id="dbtn" type="button" disabled>Elimina</button></p>
+        <p class="msg" id="dmsg" role="status" aria-live="polite"></p>
+      </div>
+    </section>
   </div>
 </main>
 
@@ -100,13 +118,59 @@ table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--car
 
   function load(){
     $("sync").textContent="Caricamento…";
-    sb.from(TABLE).select("nome,cognome,partecipa,durata,giorni,tira").then(function(r){
+    sb.from(TABLE).select("*").then(function(r){
       if(r.error){$("sync").textContent="Errore: "+r.error.message;return}
       rows=r.data||[];
       $("sync").textContent="Aggiornato alle "+new Date().toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
       render();
     });
   }
+
+  /* ---- eliminazione: nome -> (cognome se omonimi) -> elimina ---- */
+  var key=function(s){return String(s||"").trim().toLowerCase()};
+  function fillNames(){
+    var sel=$("dn"),cur=sel.value,seen={},names=[];
+    rows.forEach(function(p){var k=key(p.nome);if(!seen[k]){seen[k]=1;names.push([k,p.nome.trim()])}});
+    names.sort(function(a,b){return a[1].localeCompare(b[1],"it")});
+    sel.innerHTML="";
+    var o=el("option",null,"— scegli un nome —");o.value="";sel.appendChild(o);
+    names.forEach(function(n){var o=el("option",null,n[1]);o.value=n[0];sel.appendChild(o)});
+    if(seen[cur])sel.value=cur;
+    fillSurnames();
+  }
+  function fillSurnames(){
+    var k=$("dn").value,s=$("ds");s.innerHTML="";
+    if(!k){$("dsw").hidden=true;$("dbtn").disabled=true;$("dinfo").textContent="";return}
+    var m=rows.filter(function(p){return key(p.nome)===k}).sort(byName);
+    m.forEach(function(p){
+      var dup=m.filter(function(q){return key(q.cognome)===key(p.cognome)}).length>1;
+      var lab=p.cognome+(dup?" ("+(p.partecipa?(p.giorni||[]).join("/"):"no")+")":"");
+      var o=el("option",null,lab);o.value=rows.indexOf(p);s.appendChild(o);
+    });
+    $("dsw").hidden=m.length<2;
+    $("dbtn").disabled=false;
+    info();
+  }
+  function chosen(){return rows[+$("ds").value]}
+  function info(){
+    var p=chosen();if(!p){$("dinfo").textContent="";return}
+    $("dinfo").textContent="Verrà eliminata: "+full(p)+" — "+(p.partecipa?"viene"+(p.tira?", tira":", non tira"):"non viene")+".";
+  }
+  $("dn").onchange=function(){$("dmsg").textContent="";fillSurnames()};
+  $("ds").onchange=function(){$("dmsg").textContent="";info()};
+  $("dbtn").onclick=function(){
+    var p=chosen();if(!p)return;
+    if(!confirm("Eliminare definitivamente "+full(p)+"?"))return;
+    var q=sb.from(TABLE).delete();
+    q=p.id!=null?q.eq("id",p.id):q.eq("nome",p.nome).eq("cognome",p.cognome);
+    $("dbtn").disabled=true;$("dmsg").textContent="Eliminazione…";
+    q.select().then(function(r){
+      if(r.error){$("dmsg").textContent="Errore: "+r.error.message;$("dbtn").disabled=false;return}
+      if(!r.data||!r.data.length){$("dmsg").textContent="Nessuna riga eliminata: manca la regola di eliminazione (esegui supabase_gestori.sql).";$("dbtn").disabled=false;return}
+      $("dn").value="";load();
+      $("dmsg").textContent=full(p)+" eliminata.";
+    });
+  };
 
   function list(arr,extra){
     if(!arr.length)return el("span","empty","Nessuno");
@@ -139,6 +203,7 @@ table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--car
     $("no").innerHTML="";$("no").appendChild(list(nt,giorni));
     $("tot").textContent=yes.length+" partecipanti su "+rows.length+" risposte.";
     $("nov").textContent=no.length?no.sort(byName).map(full).join(", "):"Nessuno ha risposto «No».";
+    fillNames();
   }
 })();
 </script>
