@@ -41,7 +41,7 @@ partecipa: {
 spese: {
   titolo: "Quanto costa",
   lead: "Le voci principali del viaggio. Bere, cene, pranzi, souvenir e gadget dipendono da te.",
-  voci: [["Casa","35 € a notte a persona"],["Viaggio in macchina","circa 15 €"],["Biglietto d'ingresso (solo domenica)","16.50 € online"],["Berretto Frigio","6 € / 8 €"],["Iscrizione squadra","minimo 100 €"]]
+  voci: [["Casa","35 € a persona"],["Viaggio in macchina","circa 15 €"],["Biglietto d'ingresso (solo domenica)","16.50 € online"],["Berretto Frigio","6 € / 8 €"],["Iscrizione squadra","minimo 100 €"]]
 },
 luoghi: {
   titolo: "Luoghi importanti",
