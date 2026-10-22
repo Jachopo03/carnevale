@@ -14,7 +14,7 @@ info: {
   valigia: [
     ["img/cappello.png", "Berretto Frigio", "Il cappello rosso a calza: segnala che sei un cittadino neutrale."],
     ["img/scarponi.png", "Scarponi", "Si cammina per ore su strade bagnate e piene di arance."],
-    ["img/vestiti.png", "Vestiti brutti e sporcabili", "Il succo d'arancia non va più via."]
+    ["img/vestiti.png", "Vestiti brutti e sporcabili", "Il succo d'arancia é difficile da far andr via."]
   ]
 },
 programma: {
@@ -41,7 +41,7 @@ partecipa: {
 spese: {
   titolo: "Quanto costa",
   lead: "Le voci principali del viaggio. Bere, cene, pranzi, souvenir e gadget dipendono da te.",
-  voci: [["Casa","35 € a notte"],["Viaggio in macchina","circa 15 €"],["Biglietto d'ingresso (solo domenica)","16.50 € online"],["Berretto Frigio","6 € / 8 €"],["Iscrizione squadra","minimo 100 €"]]
+  voci: [["Casa","35 € a notte a persona"],["Viaggio in macchina","circa 15 €"],["Biglietto d'ingresso (solo domenica)","16.50 € online"],["Berretto Frigio","6 € / 8 €"],["Iscrizione squadra","minimo 100 €"]]
 },
 luoghi: {
   titolo: "Luoghi importanti",

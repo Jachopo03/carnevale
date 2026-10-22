@@ -70,7 +70,12 @@
     var imgHtml = o.immagine ? '<img src="' + o.immagine + '" alt="' + esc(o.titolo) + '" style="width:100%; border-radius:8px; margin: 1rem 0;">' : '';
     
     return head(o) + imgHtml + '<div class="places">' + o.voci.map(function (v, index) {
-      var queryApple = (v[0] === "Piazza di Città") ? "Piazza Ferruccio Nazionale, Ivrea, Italy" : (v[0] + ", Ivrea, Italy");
+      var appleOverride = {
+        "Piazza di Città": "Piazza Ferruccio Nazionale, Ivrea, Italy",
+        "Piazza Rondolino": "Piazza Rondolino, Ivrea, Italy",
+        "Borghetto": "Via Guido Gozzano, Ivrea, Italy"
+      };
+      var queryApple = appleOverride[v[0]] || (v[0] + ", Ivrea, Italy");
       var queryGmaps = v[0] + ", Ivrea, Italy";
 
       var gmaps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(queryGmaps);
