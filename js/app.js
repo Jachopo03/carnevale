@@ -72,7 +72,7 @@
     return head(o) + imgHtml + '<div class="places">' + o.voci.map(function (v, index) {
       var appleOverride = {
         "Piazza di Città": "Piazza Ferruccio Nazionale, Ivrea, Italy",
-        "Piazza Rondolino": "Piazza Rondolino, Ivrea, Italy",
+        "Piazza Rondolino": "Corso Botta, Ivrea, Italy",
         "Borghetto": "Via Guido Gozzano, Ivrea, Italy"
       };
       var queryApple = appleOverride[v[0]] || (v[0] + ", Ivrea, Italy");
