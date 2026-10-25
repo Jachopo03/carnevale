@@ -56,6 +56,15 @@ table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--car
     </section>
 
     <section>
+      <h2>Chi dorme</h2>
+      <p class="lead" id="dormtot"></p>
+      <div class="scroll"><table class="g">
+        <thead><tr><th>Nome</th><th>Giorni</th></tr></thead>
+        <tbody id="dorm"></tbody>
+      </table></div>
+    </section>
+
+    <section>
       <h2>Chi tira e chi no</h2>
       <p class="lead" id="tot"></p>
       <div class="scroll"><table class="g">
@@ -203,6 +212,19 @@ table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--car
     $("no").innerHTML="";$("no").appendChild(list(nt,giorni));
     $("tot").textContent=yes.length+" partecipanti su "+rows.length+" risposte.";
     $("nov").textContent=no.length?no.sort(byName).map(full).join(", "):"Nessuno ha risposto «No».";
+    /* ---- chi dorme ---- */
+    var dm=yes.filter(function(p){return p.dorme}).sort(byName);
+    $("dormtot").textContent=dm.length+" su 6 posti letto occupati.";
+    var db=$("dorm");db.innerHTML="";
+    if(!dm.length){var tr0=el("tr");var td0=el("td","empty","Nessuno");td0.colSpan=2;tr0.appendChild(td0);db.appendChild(tr0)}
+    dm.forEach(function(p){
+      var tr=el("tr");
+      tr.appendChild(el("td",null,full(p)));
+      tr.appendChild(el("td",null,(p.giorni||[]).map(function(g){
+        var d=DAYS.filter(function(x){return x[0]===g})[0];return d?d[1]+" "+d[2]:g;
+      }).join(", ")));
+      db.appendChild(tr);
+    });
     fillNames();
   }
 })();
