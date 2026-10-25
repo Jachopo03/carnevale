@@ -6,8 +6,7 @@ hero: {
   testo: "Otto secoli di storia. Non uno spettacolo da guardare: una battaglia per la libertà, combattuta a colpi di arance.",
   fatti: ["Edizione 2027", "Dal 6 gennaio al 10 febbraio", "Il nostro viaggio: 6–9 febbraio"]
 },
-nav: [["info","Informazioni"],["programma","Programma"],["partecipa","Partecipa"],["spese","Spese"],["luoghi","Luoghi"],/*["nostre","Le nostre"]*/,["squadre","Squadre"],["personaggi","Personaggi"],["carri","Carri"],["storia","Storia"],["profilo","Il mio profilo","profilo.html"]],
-info: {
+nav: [["info","Informazioni"],["programma","Programma"],["partecipa","Partecipa"],["spese","Spese"],["luoghi","Luoghi"],["profilo","Il mio profilo 👤","profilo.html"]],info: {
   titolo: "Prima di partire",
   lead: "Poche informazioni, ma da rispettare. Ad Ivrea il carnevale si vive, e si vive vestiti nel modo giusto.",
   regole: [["red","Regole","Indossare sempre il Berretto Frigio. Divertirsi (e ubriacarsi, a piacere)"],["warn","Attenzione","Usciti dalle mura bisogna fare il giro per rientrare."],["warn","Attenzione","Per partecipare al carnevale non è obbligatorio partecipare al tiro delle arance."]],
