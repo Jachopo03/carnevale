@@ -5,9 +5,10 @@
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); };
 
   /* ---------- navbar ---------- */
+  // Ogni voce è [id, etichetta] oppure [id, etichetta, "pagina.html"] per i link esterni (es. il profilo)
   $("#nav").innerHTML = '<div class="bar"><a class="brand" href="#top">' + esc(D.brand) + '</a>' +
     '<button class="burger" aria-label="Apri il menu" aria-expanded="false" aria-controls="menu">☰</button>' +
-    '<ul id="menu">' + D.nav.map(function (n) { return '<li><a href="#' + n[0] + '">' + esc(n[1]) + '</a></li>'; }).join("") + '</ul></div>';
+    '<ul id="menu">' + D.nav.map(function (n) { return '<li><a href="' + (n[2] || '#' + n[0]) + '">' + esc(n[1]) + '</a></li>'; }).join("") + '</ul></div>';
   var nav = $("#nav"), burger = $(".burger", nav);
   function toggleMenu(open) {
     nav.classList.toggle("open", open);
@@ -50,11 +51,16 @@
       '<form class="rsvp" id="rsvp" novalidate>' +
       '<div class="row"><div><label class="f" for="nome">Nome</label><input type="text" id="nome" name="nome" maxlength="60" autocomplete="given-name" required></div>' +
       '<div><label class="f" for="cognome">Cognome</label><input type="text" id="cognome" name="cognome" maxlength="60" autocomplete="family-name" required></div></div>' +
+      '<div class="row" style="margin-top:1rem"><div><label class="f" for="pin">Codice numerico (4-6 cifre)</label>' +
+      '<input type="text" id="pin" name="pin" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" required>' +
+      '<p class="note" style="margin:.3rem 0 0">Ti serve per rivedere o cambiare la risposta dal <a href="profilo.html">profilo</a>. Non perderlo.</p></div></div>' +
       '<fieldset><legend>Partecipi?</legend><div class="opts">' + radio("partecipa", "si", "Sì, ci sono") + radio("partecipa", "no", "No, stavolta no") + '</div></fieldset>' +
       '<div id="dettagli" hidden>' +
       '<fieldset><legend>Quanto ti fermi?</legend><div class="opts">' + radio("durata", "un_giorno", "Un giorno solo") + radio("durata", "due_tre", "Da 2 a 3 giorni") + radio("durata", "tutti", "Tutti i giorni") + '</div></fieldset>' +
       '<fieldset id="gg" hidden><legend id="ggl">Quali giorni?</legend><div class="opts">' +
       o.giorni.map(function (g) { return '<label><input type="checkbox" name="giorni" value="' + g[0] + '"> ' + esc(g[1]) + '</label>'; }).join("") + '</div></fieldset>' +
+      '<fieldset id="dm" hidden><legend>Dormi da noi?</legend><div class="opts">' + radio("dorme", "si", "Sì, mi serve un posto letto") + radio("dorme", "no", "No, ho già da dormire") + '</div>' +
+      '<p class="note" id="letti" style="margin:.5rem 0 0"></p></fieldset>' +
       '<fieldset><legend>Tiri le arance?</legend><div class="opts">' + radio("tira", "si", "Sì, tiro") + radio("tira", "no", "No, mi godo la festa") + '</div></fieldset></div>' +
       '<p style="margin:1.4rem 0 0"><button class="btn" type="submit" id="invia">Invia la risposta</button></p>' +
       '<p class="msg" id="msg" role="status" aria-live="polite"></p></form>';
@@ -68,7 +74,7 @@
   S.luoghi = function () {
     var o = D.luoghi;
     var imgHtml = o.immagine ? '<img src="' + o.immagine + '" alt="' + esc(o.titolo) + '" style="width:100%; border-radius:8px; margin: 1rem 0;">' : '';
-    
+
     return head(o) + imgHtml + '<div class="places">' + o.voci.map(function (v, index) {
       var appleOverride = {
         "Piazza di Città": "Piazza Ferruccio Nazionale, Ivrea, Italy",
@@ -97,9 +103,9 @@
       '</div>';
 
       return '<div class="box" onclick="var m = document.getElementById(\'' + boxId + '\'); m.style.display = m.style.display === \'flex\' ? \'none\' : \'flex\';" style="cursor: pointer; position: relative;">' +
-        '<h3>' + esc(v[0]) + '</h3>' + 
+        '<h3>' + esc(v[0]) + '</h3>' +
         (v[1] ? '<p class="note" style="margin:0 0 .3rem">' + esc(v[1]) + '</p>' : '') +
-        tagsHtml + 
+        tagsHtml +
         mapMenu +
       '</div>';
     }).join("") + '</div>';
@@ -169,14 +175,35 @@
   var val = function (n) { var r = form.querySelector('input[name="' + n + '"]:checked'); return r ? r.value : null; };
   var giorni = function () { return $$('input[name="giorni"]:checked', form).map(function (c) { return c.value; }); };
 
+  // posti letto: null = non ancora caricati
+  var occupati = null;
+  function mostraLetti() {
+    var liberi = Math.max(0, D.partecipa.letti - occupati);
+    var si = form.querySelector('input[name="dorme"][value="si"]');
+    si.disabled = liberi === 0;
+    if (liberi === 0) si.checked = false;
+    $("#letti").textContent = liberi === 0
+      ? "Posti letto esauriti."
+      : "Posti letto rimasti: " + liberi + " su " + D.partecipa.letti + ".";
+  }
+  function caricaLetti() {
+    $("#letti").textContent = "Controllo i posti letto…";
+    API.posti().then(function (n) { occupati = n; mostraLetti(); })
+      .catch(function () { $("#letti").textContent = ""; });
+  }
+
   function sync() {
     var vai = val("partecipa") === "si", d = val("durata");
+    var multi = vai && (d === "due_tre" || d === "tutti");
     $("#dettagli").hidden = !vai;
     $("#gg").hidden = !(vai && (d === "un_giorno" || d === "due_tre"));
     $("#ggl").textContent = d === "due_tre" ? "Quali 2 o 3 giorni?" : "Quale giorno?";
     var max = d === "un_giorno" ? 1 : 3;
     var sel = giorni();
     while (sel.length > max) { form.querySelector('input[name="giorni"][value="' + sel.pop() + '"]').checked = false; }
+    // «Dormi da noi?» compare solo da 2 giorni in su
+    $("#dm").hidden = !multi;
+    if (multi) { if (occupati === null) caricaLetti(); else mostraLetti(); }
   }
   form.addEventListener("change", sync);
 
@@ -184,38 +211,48 @@
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    var nome = $("#nome").value.trim(), cognome = $("#cognome").value.trim(), vai = val("partecipa");
+    var nome = $("#nome").value.trim(), cognome = $("#cognome").value.trim(), pin = $("#pin").value.trim(), vai = val("partecipa");
     if (!nome || !cognome) return show("Inserisci nome e cognome.", false);
+    if (!/^\d{4,6}$/.test(pin)) return show("Il codice deve essere di 4-6 cifre.", false);
     if (!vai) return show("Scegli se partecipi o no.", false);
-    var rec = { nome: nome, cognome: cognome, partecipa: vai === "si", durata: null, giorni: null, tira: null };
+    var rec = { nome: nome, cognome: cognome, pin: pin, partecipa: vai === "si", durata: null, giorni: null, tira: null, dorme: false };
     if (rec.partecipa) {
       var d = val("durata"), g = giorni();
       if (!d) return show("Scegli quanto ti fermi.", false);
       if (d === "un_giorno" && g.length !== 1) return show("Scegli il giorno in cui vieni.", false);
       if (d === "due_tre" && (g.length < 2 || g.length > 3)) return show("Scegli 2 o 3 giorni.", false);
+      var multi = d === "due_tre" || d === "tutti";
+      if (multi && !val("dorme")) return show("Dicci se dormi da noi.", false);
       if (!val("tira")) return show("Dicci se tiri le arance.", false);
       rec.durata = d;
       rec.giorni = d === "tutti" ? D.partecipa.giorni.map(function (x) { return x[0]; }) : g;
       rec.tira = val("tira") === "si";
+      rec.dorme = multi && val("dorme") === "si";
     }
     var btn = $("#invia"); btn.disabled = true; show("Invio in corso…", true);
     send(rec).then(function (offline) {
-      show(offline ? "Database non configurato: risposta salvata solo su questo dispositivo (modalità prova)." : "Grazie " + nome + ", risposta inviata!", true);
-      form.reset(); sync();
-    }).catch(function () {
-      show("Invio non riuscito. Controlla la connessione e riprova.", false);
+      show(offline
+        ? "Database non configurato: risposta salvata solo su questo dispositivo (modalità prova)."
+        : "Grazie " + nome + ", risposta inviata! Ricorda il tuo codice: ti serve per modificarla dal profilo.", true);
+      form.reset(); occupati = null; sync();
+    }).catch(function (err) {
+      if (err && err.message === "POSTI_ESAURITI") {
+        show("Nel frattempo i posti letto sono finiti: scegli «No» a «Dormi da noi?» e reinvia.", false);
+        caricaLetti();
+      } else {
+        show("Invio non riuscito. Controlla la connessione e riprova.", false);
+      }
     }).then(function () { btn.disabled = false; });
   });
 
   function send(rec) {
     if (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY) {
-      try { var k = "rsvp-prova", a = JSON.parse(localStorage.getItem(k) || "[]"); a.push(rec); localStorage.setItem(k, JSON.stringify(a)); } catch (x) {}
+      try { var k = "rsvp-prova", a = JSON.parse(localStorage.getItem(k) || "[]"); delete rec.pin; a.push(rec); localStorage.setItem(k, JSON.stringify(a)); } catch (x) {}
       return Promise.resolve(true);
     }
-    return fetch(C.SUPABASE_URL + "/rest/v1/" + (C.TABLE || "partecipazioni"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json", apikey: C.SUPABASE_ANON_KEY, Authorization: "Bearer " + C.SUPABASE_ANON_KEY, Prefer: "return=minimal" },
-      body: JSON.stringify(rec)
-    }).then(function (r) { if (!r.ok) throw new Error(r.status); return false; });
+    return API.rpc("registra", {
+      p_nome: rec.nome, p_cognome: rec.cognome, p_partecipa: rec.partecipa, p_durata: rec.durata,
+      p_giorni: rec.giorni, p_tira: rec.tira, p_dorme: rec.dorme, p_pin: rec.pin
+    }).then(function () { return false; });
   }
 })();

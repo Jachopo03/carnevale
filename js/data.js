@@ -6,7 +6,7 @@ hero: {
   testo: "Otto secoli di storia. Non uno spettacolo da guardare: una battaglia per la libertà, combattuta a colpi di arance.",
   fatti: ["Edizione 2027", "Dal 6 gennaio al 10 febbraio", "Il nostro viaggio: 6–9 febbraio"]
 },
-nav: [["info","Informazioni"],["programma","Programma"],["partecipa","Partecipa"],["spese","Spese"],["luoghi","Luoghi"],/*["nostre","Le nostre"]*/,["squadre","Squadre"],["personaggi","Personaggi"],["carri","Carri"],["storia","Storia"]],
+nav: [["info","Informazioni"],["programma","Programma"],["partecipa","Partecipa"],["spese","Spese"],["luoghi","Luoghi"],/*["nostre","Le nostre"]*/,["squadre","Squadre"],["personaggi","Personaggi"],["carri","Carri"],["storia","Storia"],["profilo","Il mio profilo","profilo.html"]],
 info: {
   titolo: "Prima di partire",
   lead: "Poche informazioni, ma da rispettare. Ad Ivrea il carnevale si vive, e si vive vestiti nel modo giusto.",
@@ -36,6 +36,7 @@ programma: {
 partecipa: {
   titolo: "Ci sei?",
   lead: "Dicci se vieni, quanti giorni resti e se tiri. Ci serve per organizzare case e squadre.",
+  letti: 6,
   giorni: [["sab","Sab 6"],["dom","Dom 7"],["lun","Lun 8"],["mar","Mar 9"]]
 },
 spese: {
