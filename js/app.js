@@ -157,8 +157,8 @@
   S.carri = function () { var o = D.carri; return '<h2>' + esc(o.titolo) + '</h2><div class="two"><div>' + o.sx + '</div><div>' + o.dx + '</div></div>'; };
   S.storia = function () { var o = D.storia; return '<h2>' + esc(o.titolo) + '</h2><blockquote>' + esc(o.citazione) + '</blockquote>' + o.html; };
 
-  $("#app").innerHTML = D.nav.map(function (n) {
-    return S[n[0]] ? '<section id="' + n[0] + '"' + (n[0] === "storia" ? ' class="story"' : '') + '>' + S[n[0]]() + '</section>' : '';
+  $("#app").innerHTML = D.sezioni.map(function (id) {
+    return S[id] ? '<section id="' + id + '"' + (id === "storia" ? ' class="story"' : '') + '>' + S[id]() + '</section>' : '';
   }).join("");
   $("#footer").innerHTML = '<div class="wrap">' + D.footer + '</div>';
 

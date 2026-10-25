@@ -7,6 +7,7 @@ hero: {
   fatti: ["Edizione 2027", "Dal 6 gennaio al 10 febbraio", "Il nostro viaggio: 6–9 febbraio"]
 },
 nav: [["info","Informazioni"],["programma","Programma"],["partecipa","Partecipa"],["spese","Spese"],["luoghi","Luoghi"],["profilo","Il mio profilo 👤","profilo.html"]],
+sezioni: ["info","programma","partecipa","spese","luoghi","squadre","personaggi","carri","storia"],
 info: {
   titolo: "Prima di partire",
   lead: "Poche informazioni, ma da rispettare. Ad Ivrea il carnevale si vive, e si vive vestiti nel modo giusto.",

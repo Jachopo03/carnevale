@@ -1,4 +1,3 @@
-// Chiamate alle funzioni Supabase (RPC). Da caricare dopo config.js.
 window.API = (function () {
   var C = window.CONFIG || {};
   function rpc(name, args) {
