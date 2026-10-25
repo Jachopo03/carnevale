@@ -59,7 +59,7 @@ table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--car
       <h2>Chi dorme</h2>
       <p class="lead" id="dormtot"></p>
       <div class="scroll"><table class="g">
-        <thead><tr><th>Nome</th><th>Giorni</th></tr></thead>
+        <thead><tr><th>Notte</th><th>Posti</th><th>Chi dorme</th></tr></thead>
         <tbody id="dorm"></tbody>
       </table></div>
     </section>
@@ -212,19 +212,33 @@ table.g{width:100%;border-collapse:collapse;min-width:640px;background:var(--car
     $("no").innerHTML="";$("no").appendChild(list(nt,giorni));
     $("tot").textContent=yes.length+" partecipanti su "+rows.length+" risposte.";
     $("nov").textContent=no.length?no.sort(byName).map(full).join(", "):"Nessuno ha risposto «No».";
-    /* ---- chi dorme ---- */
-    var dm=yes.filter(function(p){return p.dorme}).sort(byName);
-    $("dormtot").textContent=dm.length+" su 6 posti letto occupati.";
+    /* ---- chi dorme: una riga per notte ---- */
+    var LETTI=6;
+    var dm=yes.filter(function(p){return p.dorme});
+    function dayIdx(g){for(var i=0;i<DAYS.length;i++)if(DAYS[i][0]===g)return i;return -1}
+    function notti(p){
+      var ix=(p.giorni||[]).map(dayIdx).filter(function(i){return i>-1});
+      if(!ix.length)return [];
+      var r=[],a=Math.min.apply(null,ix),b=Math.max.apply(null,ix);
+      for(var i=a;i<b;i++)r.push(i);   // l'ultimo giorno non dorme
+      return r;
+    }
+    $("dormtot").textContent=dm.length+" persone hanno chiesto un posto letto ("+LETTI+" disponibili ogni notte).";
     var db=$("dorm");db.innerHTML="";
-    if(!dm.length){var tr0=el("tr");var td0=el("td","empty","Nessuno");td0.colSpan=2;tr0.appendChild(td0);db.appendChild(tr0)}
-    dm.forEach(function(p){
+    for(var i=0;i<DAYS.length-1;i++){
+      var chi=dm.filter(function(p){return notti(p).indexOf(i)>-1}).sort(byName);
+      var libere=LETTI-chi.length;
       var tr=el("tr");
-      tr.appendChild(el("td",null,full(p)));
-      tr.appendChild(el("td",null,(p.giorni||[]).map(function(g){
-        var d=DAYS.filter(function(x){return x[0]===g})[0];return d?d[1]+" "+d[2]:g;
-      }).join(", ")));
+      var tn=el("td",null,DAYS[i][1]+" "+DAYS[i][2]);tn.style.fontWeight="700";tr.appendChild(tn);
+      var tp=el("td",null,chi.length+" / "+LETTI+" ");
+      tp.appendChild(el("span","tag",libere>0?libere+" liberi":"completa"));
+      tr.appendChild(tp);
+      var tc=el("td");
+      if(chi.length){var ul=el("ul");chi.forEach(function(p){ul.appendChild(el("li",null,full(p)))});tc.appendChild(ul)}
+      else tc.appendChild(el("span","empty","Nessuno"));
+      tr.appendChild(tc);
       db.appendChild(tr);
-    });
+    }
     fillNames();
   }
 })();
