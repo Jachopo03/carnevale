@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Il mio profilo · Carnevale di Ivrea 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.ghead{background:#0E0E0E;color:#fff;padding:calc(env(safe-area-inset-top,0px) + 1.6rem) 0 1.6rem;border-bottom:2px solid var(--orange)}
+.ghead h1{font-size:clamp(1.8rem,7vw,3rem)}
+.ghead p{margin:.4rem 0 0;color:var(--orange);font-weight:600}
+.ghead a{color:var(--orange)}
+#login{margin:3rem auto}
+#login input{width:100%;font:inherit;padding:.6rem .8rem;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.ghost{background:transparent;color:var(--ink)}
+.ghost:hover{color:#111}
+main{padding-bottom:2rem}
+#ed{margin:2rem 0}
+</style>
+</head>
+<body>
+<header class="ghead"><div class="wrap"><h1>Il mio profilo</h1><p>Carnevale di Ivrea 2027 · <a href="index.html">torna al sito</a></p></div></header>
+
+<main class="wrap">
+  <section id="login" class="rsvp">
+    <h2 style="font-size:1.6rem">Accedi alla tua risposta</h2>
+    <div class="row">
+      <div><label class="f" for="n">Nome</label><input type="text" id="n" autocomplete="given-name"></div>
+      <div><label class="f" for="c">Cognome</label><input type="text" id="c" autocomplete="family-name"></div>
+    </div>
+    <label class="f" for="k" style="margin-top:1rem">Codice numerico</label>
+    <input type="text" id="k" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off">
+    <p style="margin:1.2rem 0 0"><button class="btn" id="go" type="button">Entra</button></p>
+    <p class="msg" id="lmsg" role="status" aria-live="polite"></p>
+  </section>
+
+  <form class="rsvp" id="ed" hidden novalidate>
+    <h2 style="font-size:1.6rem" id="who"></h2>
+    <fieldset><legend>Partecipi?</legend><div class="opts">
+      <label><input type="radio" name="partecipa" value="si"> Sì, ci sono</label>
+      <label><input type="radio" name="partecipa" value="no"> No, stavolta no</label>
+    </div></fieldset>
+    <div id="dettagli" hidden>
+      <fieldset><legend>Quanto ti fermi?</legend><div class="opts">
+        <label><input type="radio" name="durata" value="un_giorno"> Un giorno solo</label>
+        <label><input type="radio" name="durata" value="due_tre"> Da 2 a 3 giorni</label>
+        <label><input type="radio" name="durata" value="tutti"> Tutti i giorni</label>
+      </div></fieldset>
+      <fieldset id="gg" hidden><legend id="ggl">Quali giorni?</legend><div class="opts" id="gl"></div></fieldset>
+      <fieldset id="dm" hidden><legend>Dormi da noi?</legend><div class="opts">
+        <label><input type="radio" name="dorme" value="si"> Sì, mi serve un posto letto</label>
+        <label><input type="radio" name="dorme" value="no"> No, ho già da dormire</label>
+      </div><p class="note" id="letti" style="margin:.5rem 0 0"></p></fieldset>
+      <fieldset><legend>Tiri le arance?</legend><div class="opts">
+        <label><input type="radio" name="tira" value="si"> Sì, tiro</label>
+        <label><input type="radio" name="tira" value="no"> No, mi godo la festa</label>
+      </div></fieldset>
+    </div>
+    <p style="margin:1.4rem 0 0"><button class="btn" type="submit" id="salva">Salva le modifiche</button><button class="btn ghost" type="button" id="out">Esci</button></p>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  </form>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script>
+(function () {
+  var D = window.DATA, API = window.API, L = D.partecipa.letti;
+  var $ = function (i) { return document.getElementById(i); };
+  var ed = $("ed"), cred = null, altri = 0;
+  var ERR = {
+    CREDENZIALI: "Nome, cognome o codice non corretti. Dopo 5 errori l'accesso si blocca per 15 minuti.",
+    POSTI_ESAURITI: "Nel frattempo i posti letto sono finiti.",
+    PIN_NON_VALIDO: "Codice non valido."
+  };
+
+  $("gl").innerHTML = D.partecipa.giorni.map(function (g) {
+    return '<label><input type="checkbox" name="giorni" value="' + g[0] + '"> ' + g[1] + '</label>';
+  }).join("");
+
+  function say(id, t, ok) { var m = $(id); m.textContent = t; m.className = "msg " + (ok ? "ok" : "err"); }
+  function all(n) { return Array.prototype.slice.call(ed.querySelectorAll('input[name="' + n + '"]')); }
+  function val(n) { var r = ed.querySelector('input[name="' + n + '"]:checked'); return r ? r.value : null; }
+  function giorni() { return all("giorni").filter(function (c) { return c.checked; }).map(function (c) { return c.value; }); }
+  function setR(n, v) { all(n).forEach(function (i) { i.checked = (i.value === v); }); }
+
+  function sync() {
+    var vai = val("partecipa") === "si", d = val("durata");
+    var multi = vai && (d === "due_tre" || d === "tutti");
+    $("dettagli").hidden = !vai;
+    $("gg").hidden = !(vai && (d === "un_giorno" || d === "due_tre"));
+    $("ggl").textContent = d === "due_tre" ? "Quali 2 o 3 giorni?" : "Quale giorno?";
+    var max = d === "un_giorno" ? 1 : 3, sel = giorni();
+    while (sel.length > max) { ed.querySelector('input[name="giorni"][value="' + sel.pop() + '"]').checked = false; }
+    $("dm").hidden = !multi;
+    var liberi = L - altri, si = ed.querySelector('input[name="dorme"][value="si"]');
+    si.disabled = liberi <= 0;
+    if (liberi <= 0 && si.checked) si.checked = false;
+    $("letti").textContent = liberi <= 0 ? "Posti letto esauriti." : "Posti letto rimasti: " + liberi + " su " + L + ".";
+  }
+  ed.addEventListener("change", sync);
+
+  function login() {
+    var c = { p_nome: $("n").value.trim(), p_cognome: $("c").value.trim(), p_pin: $("k").value.trim() };
+    if (!c.p_nome || !c.p_cognome || !c.p_pin) return say("lmsg", "Compila nome, cognome e codice.", false);
+    say("lmsg", "Accesso in corso…", true);
+    Promise.all([API.rpc("profilo_leggi", c), API.posti()]).then(function (r) {
+      var p = r[0]; cred = c; altri = r[1] - (p.dorme ? 1 : 0);
+      setR("partecipa", p.partecipa ? "si" : "no");
+      setR("durata", p.durata);
+      var gs = p.giorni || [];
+      all("giorni").forEach(function (i) { i.checked = gs.indexOf(i.value) > -1; });
+      setR("tira", p.tira == null ? null : (p.tira ? "si" : "no"));
+      setR("dorme", p.dorme ? "si" : "no");
+      $("who").textContent = p.nome + " " + p.cognome;
+      $("login").hidden = true; ed.hidden = false; $("msg").textContent = "";
+      sync();
+    }).catch(function (e) { say("lmsg", ERR[e.message] || "Errore: " + e.message, false); });
+  }
+  $("go").onclick = login;
+  $("k").onkeydown = function (e) { if (e.key === "Enter") login(); };
+
+  $("out").onclick = function () {
+    cred = null; ed.hidden = true; $("login").hidden = false; $("k").value = ""; $("lmsg").textContent = "";
+  };
+
+  ed.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var vai = val("partecipa");
+    if (!vai) return say("msg", "Scegli se partecipi o no.", false);
+    var a = {
+      p_nome: cred.p_nome, p_cognome: cred.p_cognome, p_pin: cred.p_pin,
+      p_partecipa: vai === "si", p_durata: null, p_giorni: null, p_tira: null, p_dorme: false
+    };
+    if (a.p_partecipa) {
+      var d = val("durata"), g = giorni();
+      if (!d) return say("msg", "Scegli quanto ti fermi.", false);
+      if (d === "un_giorno" && g.length !== 1) return say("msg", "Scegli il giorno in cui vieni.", false);
+      if (d === "due_tre" && (g.length < 2 || g.length > 3)) return say("msg", "Scegli 2 o 3 giorni.", false);
+      var multi = d === "due_tre" || d === "tutti";
+      if (multi && !val("dorme")) return say("msg", "Dicci se dormi da noi.", false);
+      if (!val("tira")) return say("msg", "Dicci se tiri le arance.", false);
+      a.p_durata = d;
+      a.p_giorni = d === "tutti" ? D.partecipa.giorni.map(function (x) { return x[0]; }) : g;
+      a.p_tira = val("tira") === "si";
+      a.p_dorme = multi && val("dorme") === "si";
+    }
+    var b = $("salva"); b.disabled = true; say("msg", "Salvataggio…", true);
+    API.rpc("profilo_aggiorna", a).then(function () {
+      say("msg", "Modifiche salvate.", true);
+      return API.posti().then(function (n) { altri = n - (a.p_dorme ? 1 : 0); sync(); });
+    }).catch(function (err) {
+      say("msg", ERR[err.message] || "Salvataggio non riuscito: " + err.message, false);
+      if (err.message === "POSTI_ESAURITI") API.posti().then(function (n) { altri = n; sync(); });
+    }).then(function () { b.disabled = false; });
+  });
+})();
+</script>
+</body>
+</html>
