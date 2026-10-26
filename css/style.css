@@ -4,10 +4,6 @@
   --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
   --navh:3.5rem;color-scheme:light;
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){--bg:#111;--ink:#fff;--muted:#BDBDBD;--card:#1C1C1C;--line:#333;--soft:#2A1E10;--red:#F28C0F;color-scheme:dark}
-}
-:root[data-theme="dark"]{--bg:#111;--ink:#fff;--muted:#BDBDBD;--card:#1C1C1C;--line:#333;--soft:#2A1E10;--red:#F28C0F;color-scheme:dark}
 html{scroll-padding-top:calc(var(--navh) + env(safe-area-inset-top,0px) + .5rem);scroll-behavior:smooth}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 1.0625rem/1.6 var(--body);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -108,8 +104,6 @@ table.sq{width:100%;border-collapse:collapse;min-width:480px}
 .rsvp [hidden]{display:none}
 .msg{margin-top:1rem;font-weight:600}
 .msg.ok{color:#2E7D32}.msg.err{color:#C62828}
-@media (prefers-color-scheme:dark){.msg.ok{color:#81C784}.msg.err{color:#EF9A9A}}
-
 blockquote{margin:0 0 1.5rem;padding:1.4rem 1.6rem;background:#111;color:#F28C0F;border:2px solid #F28C0F;border-radius:14px;font-family:var(--display);font-size:clamp(1.2rem,3.4vw,1.7rem);line-height:1.25}
 .story h3{margin-top:1.5rem}
 footer{margin-top:4rem;padding:2rem 0;background:#0E0E0E;color:#ddd;text-align:center;font-size:.95rem}
