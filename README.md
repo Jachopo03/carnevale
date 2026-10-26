@@ -32,6 +32,7 @@ Contiene informazioni, programma, mappa dei luoghi, squadre, personaggi, storia 
 │   ├── api.js            # chiamate RPC a Supabase
 │   └── app.js            # rendering delle sezioni e logica del modulo
 └── img/                  # loghi squadre, foto personaggi, mappa, icone
+```
 
 ## Modificare i contenuti
 
