@@ -121,27 +121,16 @@
 
   S.squadre = function () {
     var o = D.squadre;
-    return head(o) + '<div class="scroll"><table class="sq"><thead><tr><th>Squadra</th><th>Fondata</th><th>Zona di tiro</th></tr></thead><tbody>' +
-      o.righe.map(function (r) {
-        var nomeSquadra = r[0];
-        var anno = r[1];
-        var zona = r[2];
-        var evidenziata = r[3];
-        var logoPath = r[4];
-        var linkSito = r[5];
-        var logoHtml = logoPath ? '<img src="' + logoPath + '" alt="" style="width: 24px; height: 24px; object-fit: contain; margin-right: 8px; vertical-align: middle;">' : '';
-        var nomeCell = logoHtml + esc(nomeSquadra);
-        if (linkSito) {
-          nomeCell = '<a href="' + linkSito + '" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center;">' + logoHtml + esc(nomeSquadra) + '</a>';
-        } else {
-          nomeCell = '<span style="display: inline-flex; align-items: center;">' + logoHtml + esc(nomeSquadra) + '</span>';
-        }
-        return '<tr' + (evidenziata ? ' class="hl"' : '') + '>' +
-          '<td>' + nomeCell + '</td>' +
-          '<td>' + anno + '</td>' +
-          '<td>' + esc(zona) + '</td>' +
-        '</tr>';
-      }).join("") + '</tbody></table></div>';
+    return head(o) +
+      '<div class="sqbar"><button class="pill" id="sqp" type="button" aria-label="Squadra precedente">←</button><button class="pill" id="sqn" type="button" aria-label="Squadra successiva">→</button><span class="badge" id="sqc">1 / ' + o.righe.length + '</span></div>' +
+      '<div class="slider" id="sq">' + o.righe.map(function (r) {
+        var ini = r[0].replace(/^(Aranceri|Diavoli|Credendari) ?/, "").charAt(0) || r[0].charAt(0);
+        var logo = r[4] ? '<img src="' + r[4] + '" alt="">' : "";
+        return '<div class="box sqc' + (r[3] ? ' hl' : '') + '"><div class="monogram">' + esc(ini) + logo + '</div>' +
+          '<h3><button class="card-link" type="button" aria-expanded="false">' + esc(r[0]) + '</button></h3>' +
+          '<span class="tag">Dal ' + r[1] + '</span><span class="tag">' + esc(r[2]) + '</span>' +
+          (r[5] ? '<div><a class="link" href="' + r[5] + '" target="_blank" rel="noopener noreferrer">Sito della squadra ↗</a></div>' : '') + '</div>';
+      }).join("") + '</div>';
   };
 
   S.personaggi = function () {
@@ -254,5 +243,85 @@
       p_nome: rec.nome, p_cognome: rec.cognome, p_partecipa: rec.partecipa, p_durata: rec.durata,
       p_giorni: rec.giorni, p_tira: rec.tira, p_dorme: rec.dorme, p_pin: rec.pin
     }).then(function () { return false; });
+  }
+
+  /* ---------- design v4: effetti (barra, sfondo dinamico, forme, comparsa) ---------- */
+  var root = document.documentElement, motionOK = true;
+
+  // slider squadre
+  var sq = $("#sq");
+  if (sq) {
+    $$(".card-link", sq).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var c = b.closest(".box"), open = !c.classList.contains("open");
+        c.classList.toggle("open", open); b.setAttribute("aria-expanded", open);
+      });
+    });
+    var cnt = $("#sqc");
+    sq.addEventListener("scroll", function () {
+      var k = sq.children.length, w = sq.scrollWidth / k;
+      cnt.textContent = Math.min(k, Math.round(sq.scrollLeft / w) + 1) + " / " + k;
+    }, { passive: true });
+    $("#sqp").onclick = function () { sq.scrollBy({ left: -300, behavior: "smooth" }); };
+    $("#sqn").onclick = function () { sq.scrollBy({ left: 300, behavior: "smooth" }); };
+  }
+
+  // hero: pulsanti, posti letto, riduci movimento
+  var hw = $("#hero .wrap");
+  if (hw) {
+    hw.insertAdjacentHTML("beforeend", '<div class="cta-row"><a class="btn pri" href="#partecipa">Ci sono! Rispondi ora</a><a class="btn ghost" href="#programma">Vedi il programma</a><span class="badge" id="posti" hidden></span></div>');
+    if (window.API) API.posti().then(function (n) {
+      if (!C.SUPABASE_URL) return;
+      var p = $("#posti"); p.textContent = "🍊 Posti letto liberi: " + Math.max(0, D.partecipa.letti - n) + " su " + D.partecipa.letti; p.hidden = false;
+    }).catch(function () {});
+  }
+  // fascia scorrevole e forme di sfondo
+  $("#hero").insertAdjacentHTML("afterend", '<div class="mq" aria-hidden="true"><div>' +
+    (new Array(11).join("ARANCE ✦ LIBERTÀ ✦ BERRETTO FRIGIO ✦ MUGNAIA ✦ BATTAGLIA ✦ ")) + '</div></div>');
+  var mqd = $(".mq div"); mqd.innerHTML = '<span>' + mqd.innerHTML + '</span><span>' + mqd.innerHTML + '</span>';
+  document.body.insertAdjacentHTML("afterbegin", '<div class="fx" aria-hidden="true"><i class="orb orb-1"></i><i class="orb orb-2"></i><i class="orb orb-3"></i>' +
+    '<svg class="cap" viewBox="0 0 120 120"><path d="M14 96c-4-40 8-82 52-84 20-1 32 10 36 26 4 14 14 20 16 30 1 6-4 10-12 10-10 0-14-6-20-6-14 0-10 24-30 24-22 0-40 4-42 0z" fill="#C23A1B"/><path d="M12 96h96v14H12z" fill="#7A1F12"/></svg></div>');
+  var fx = $(".fx"), bar = document.createElement("div"); bar.className = "pbar"; $("#nav").appendChild(bar);
+
+  // sfondo che sfuma tra i colori delle sezioni
+  var secs = $$("#hero .hero, main>section[id]"), A = [], tick = 0;
+  var hx = function (h) { h = h.replace("#", ""); return [0, 2, 4].map(function (i) { return parseInt(h.substr(i, 2), 16); }); };
+  function meas() {
+    A = secs.map(function (e) {
+      var c = getComputedStyle(e), r = e.getBoundingClientRect();
+      return { y: r.top + scrollY + r.height / 2, b: hx(c.getPropertyValue("--sb").trim() || "#ffffff"), f: c.getPropertyValue("--sf").trim() || "#17130F" };
+    });
+  }
+  function paint() {
+    tick = 0; if (!A.length) return;
+    var y = scrollY + innerHeight * .5, i = 0;
+    while (i < A.length - 1 && A[i + 1].y <= y) i++;
+    var a = A[i], b = A[Math.min(i + 1, A.length - 1)], t = a === b ? 0 : (y - a.y) / (b.y - a.y);
+    t = Math.max(0, Math.min(1, t)); t = t * t * (3 - 2 * t);
+    root.style.setProperty("--page", "rgb(" + a.b.map(function (v, k) { return Math.round(v + (b.b[k] - v) * t); }) + ")");
+    root.style.setProperty("--fg", t > .5 ? b.f : a.f);
+    var m = document.documentElement.scrollHeight - innerHeight;
+    bar.style.width = (m > 0 ? scrollY / m * 100 : 0) + "%";
+    fx.style.setProperty("--sy", scrollY);
+    var h = $(".hero"); if (h) h.style.setProperty("--py", Math.min(scrollY, 700) * .15 + "px");
+  }
+  meas(); paint();
+  addEventListener("scroll", function () { if (!tick) tick = requestAnimationFrame(paint); }, { passive: true });
+  addEventListener("resize", function () { meas(); paint(); });
+  addEventListener("load", function () { meas(); paint(); });
+  setTimeout(function () { meas(); paint(); }, 800);
+  if (window.matchMedia && matchMedia("(hover:hover)").matches) {
+    addEventListener("mousemove", function (e) {
+      fx.style.setProperty("--mx", e.clientX / innerWidth - .5); fx.style.setProperty("--my", e.clientY / innerHeight - .5);
+    }, { passive: true });
+  }
+
+  // comparsa delle sezioni allo scroll
+  if ("IntersectionObserver" in window) {
+    root.classList.add("js");
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { threshold: .04, rootMargin: "0px 0px -6% 0px" });
+    $$("main>section").forEach(function (x) { io.observe(x); });
   }
 })();

@@ -49,7 +49,7 @@ luoghi: {
   titolo: "Luoghi importanti",
   immagine:"img/mappa.jpg",
   lead: "Ogni piazza ha la sua squadra e la sua funzione.",
-  voci: [["Piazza di Città","Picche e Morte",["Mugnaia","Trofeo","Premiazione","Scarlo"]],["Piazza Rondolino","Mercenari e Pantere",["Parco con cibo"]],["Piazza Freguglia","Diavoli e Credendari",["Diavolandia"]],["Piazza Ottinetti","Scacchi e Arduini",["I peggiori"]],["Piazza Gioberti","",["Ingresso 3","Fagiolata"]],["Borghetto","Tuchini",["Ingresso 1/2","Stazione"]],["Vecchio Ponte","",["Preda in Dora"]]]
+  voci: [["Piazza di Città","Picche e Morte",["Mugnaia","Trofeo","Premiazione","Scarlo"]],["Piazza Rondolino","Mercenari e Pantere",["Parco con cibo"]],["Piazza Freguglia","Diavoli e Credendari",["Diavolandia"]],["Piazza Ottinetti","Scacchi e Arduini",["I peggiori"]],["Piazza Gioberti","",["Ingresso 3","Fagiolata"]],["Borghetto","Tuchini",["Ingresso 1/2","Stazione"]],["Ponte Vecchio","",["Preda in Dora"]]]
 },
 /*nostre: {
   titolo: "Le squadre del cuore",
