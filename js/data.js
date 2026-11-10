@@ -6,7 +6,7 @@ hero: {
   testo: "Otto secoli di storia. Non uno spettacolo da guardare: una battaglia per la libertà, combattuta a colpi di arance.",
   fatti: ["Edizione 2027", "Dal 6 gennaio al 10 febbraio", "Il nostro viaggio: 6–9 febbraio"]
 },
-nav: [["info","Informazioni"],["programma","Programma"],["partecipa","Partecipa"],["spese","Spese"],["luoghi","Luoghi"],["profilo","Il mio profilo 👤","profilo.html"]],
+nav: [["info","Informazioni"],["programma","Programma"],["partecipa","Partecipa"],["spese","Spese"],["luoghi","Luoghi"]],
 sezioni: ["info","programma","partecipa","spese","luoghi","squadre","personaggi","carri","storia"],
 info: {
   titolo: "Prima di partire",
@@ -85,8 +85,8 @@ personaggi: {
 },
 carri: {
   titolo: "I carri da getto",
-  sx: "<p>A differenza delle squadre a piedi, ancorate a un rione o a una piazza, i carri <b>sfilano continuamente lungo un percorso cittadino</b> e affrontano a turno tutte le 9 squadre a terra.</p><h3>Due categorie</h3><p><b>Pariglie</b>, a 2 cavalli: ospitano di solito da 10 a 12 aranceri.<br><b>Tiri a quattro</b>, a 4 cavalli: carri più grandi, con 12-15 aranceri.</p>",
-  dx: "<h3>Com'è fatto un carro</h3><p><b>I tiratori</b> sono le guardie del tiranno: protezioni in cuoio e pesanti maschere di ferro con grata per difendersi dai colpi a raffica delle piazze.</p><p><b>I conducenti e i capocarro</b> guidano nel caos con precisione, per tutelare cavalli e folla.</p><p><b>La vestizione</b>: decorazione artigianale in legno e pittura, con stemma, nome storico e colori.</p>"
+  sx: "<p>A differenza delle squadre a piedi, ancorate a un rione o a una piazza, i carri <b>sfilano continuamente lungo un percorso cittadino</b> e affrontano a turno tutte le 9 squadre a terra.</p><h3>Due categorie</h3><div class='cat'><div><span>2</span><b>Pariglie</b>A 2 cavalli: ospitano di solito da 10 a 12 aranceri.</div><div><span>4</span><b>Tiri a quattro</b>A 4 cavalli: carri più grandi, con 12-15 aranceri.</div></div>",
+  dx: "<h3>Com'è fatto un carro</h3><ul class='parts'><li data-i='🛡️'><div><b>I tiratori</b> sono le guardie del tiranno: protezioni in cuoio e pesanti maschere di ferro con grata per difendersi dai colpi a raffica delle piazze.</div></li><li data-i='🐎'><div><b>I conducenti e i capocarro</b> guidano nel caos con precisione, per tutelare cavalli e folla.</div></li><li data-i='🎨'><div><b>La vestizione</b>: decorazione artigianale in legno e pittura, con stemma, nome storico e colori.</div></li></ul>"
 },
 storia: {
   titolo: "La storia",

@@ -48,13 +48,17 @@
     var o = D.partecipa;
     var radio = function (name, val, label) { return '<label><input type="radio" name="' + name + '" value="' + val + '" required> ' + label + '</label>'; };
     return head(o) +
-      '<form class="rsvp" id="rsvp" novalidate>' +
+      '<div class="mode" role="group" aria-label="Cosa vuoi fare?">' +
+      '<button type="button" data-m="new" aria-selected="true"><i aria-hidden="true">✨</i><b>Mi iscrivo</b><small>Non ho ancora risposto</small></button>' +
+      '<button type="button" data-m="edit" aria-selected="false"><i aria-hidden="true">✏️</i><b>Modifico la risposta</b><small>Ho già risposto</small></button></div>' +
+      '<form class="rsvp" id="rsvp" novalidate><p class="fh" id="fh">✨ Nuova risposta</p>' +
       '<div class="row"><div><label class="f" for="nome">Nome</label><input type="text" id="nome" name="nome" maxlength="60" autocomplete="given-name" required></div>' +
       '<div><label class="f" for="cognome">Cognome</label><input type="text" id="cognome" name="cognome" maxlength="60" autocomplete="family-name" required></div></div>' +
       '<div class="row" style="margin-top:1rem"><div><label class="f" for="pin">Codice numerico (4-6 cifre)</label>' +
       '<input type="text" id="pin" name="pin" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" required>' +
-      '<p class="note" style="margin:.3rem 0 0">Ti serve per rivedere o cambiare la risposta dal <a href="profilo.html">profilo</a>. Non perderlo.</p></div></div>' +
-      '<fieldset><legend>Partecipi?</legend><div class="opts">' + radio("partecipa", "si", "Sì, ci sono") + radio("partecipa", "no", "No, stavolta no") + '</div></fieldset>' +
+      '<p class="note" id="pinnote" style="margin:.3rem 0 0">Scegli un codice di 4-6 cifre: ti serve per rivedere o cambiare la tua risposta. Non perderlo.</p></div></div>' +
+      '<p id="entrabox" style="margin:1.2rem 0 0" hidden><button class="btn pri" type="button" id="entra">Accedi alla mia risposta</button></p>' +
+      '<div id="corpo"><fieldset><legend>Partecipi?</legend><div class="opts">' + radio("partecipa", "si", "Sì, ci sono") + radio("partecipa", "no", "No, stavolta no") + '</div></fieldset>' +
       '<div id="dettagli" hidden>' +
       '<fieldset><legend>Quanto ti fermi?</legend><div class="opts">' + radio("durata", "un_giorno", "Un giorno solo") + radio("durata", "due_tre", "Da 2 a 3 giorni") + radio("durata", "tutti", "Tutti i giorni") + '</div></fieldset>' +
       '<fieldset id="gg" hidden><legend id="ggl">Quali giorni?</legend><div class="opts">' +
@@ -62,7 +66,7 @@
       '<fieldset id="dm" hidden><legend>Dormi da noi?</legend><div class="opts">' + radio("dorme", "si", "Sì, mi serve un posto letto") + radio("dorme", "no", "No, ho già da dormire") + '</div>' +
       '<p class="note" id="letti" style="margin:.5rem 0 0"></p></fieldset>' +
       '<fieldset><legend>Tiri le arance?</legend><div class="opts">' + radio("tira", "si", "Sì, tiro") + radio("tira", "no", "No, mi godo la festa") + '</div></fieldset></div>' +
-      '<p style="margin:1.4rem 0 0"><button class="btn" type="submit" id="invia">Invia la risposta</button></p>' +
+      '<p style="margin:1.4rem 0 0"><button class="btn" type="submit" id="invia">Invia la risposta</button><button class="btn ghost" type="button" id="esci" hidden>Esci</button></p></div>' +
       '<p class="msg" id="msg" role="status" aria-live="polite"></p></form>';
   };
 
@@ -73,41 +77,23 @@
 
   S.luoghi = function () {
     var o = D.luoghi;
-    var imgHtml = o.immagine ? '<img src="' + o.immagine + '" alt="' + esc(o.titolo) + '" style="width:100%; border-radius:8px; margin: 1rem 0;">' : '';
-
-    return head(o) + imgHtml + '<div class="places">' + o.voci.map(function (v, index) {
-      var appleOverride = {
-        "Piazza di Città": "Piazza Ferruccio Nazionale, Ivrea, Italy",
-        "Piazza Rondolino": "Corso Botta, Ivrea, Italy",
-        "Borghetto": "Via Guido Gozzano, Ivrea, Italy"
-      };
-      var queryApple = appleOverride[v[0]] || (v[0] + ", Ivrea, Italy");
-      var queryGmaps = v[0] + ", Ivrea, Italy";
-
-      var gmaps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(queryGmaps);
-      var apple = "https://maps.apple.com/?q=" + encodeURIComponent(queryApple);
-
-      var tagsHtml = v[2].map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join("");
-      var boxId = "luogo-menu-" + index;
-
-      var mapMenu = '<div id="' + boxId + '" style="display: none; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(0,0,0,0.1); flex-direction: column; gap: 0.4rem; font-size: 0.9rem;" onclick="event.stopPropagation();">' +
-        '<span style="font-weight: bold; font-size: 0.8rem; opacity: 0.8;">Apri con:</span>' +
-        '<div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">' +
-          '<a href="' + gmaps + '" target="_blank" rel="noopener noreferrer" style="background: #f1f3f4; color: #333; padding: 4px 10px; border-radius: 4px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">' +
-            '<img src="https://img.icons8.com/?size=100&id=svxMiuKxGwZ3&format=png&color=000000" alt="Google Maps" style="width: 18px; height: 18px;"> Google Maps' +
-          '</a>' +
-          '<a href="' + apple + '" target="_blank" rel="noopener noreferrer" style="background: #f1f3f4; color: #333; padding: 4px 10px; border-radius: 4px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">' +
-            '<img src="https://img.icons8.com/?size=100&id=9c6iBQaxdDK8&format=png&color=000000" alt="Apple Maps" style="width: 18px; height: 18px;"> Apple Maps' +
-          '</a>' +
-        '</div>' +
-      '</div>';
-
-      return '<div class="box" onclick="var m = document.getElementById(\'' + boxId + '\'); m.style.display = m.style.display === \'flex\' ? \'none\' : \'flex\';" style="cursor: pointer; position: relative;">' +
-        '<h3>' + esc(v[0]) + '</h3>' +
-        (v[1] ? '<p class="note" style="margin:0 0 .3rem">' + esc(v[1]) + '</p>' : '') +
-        tagsHtml +
-        mapMenu +
-      '</div>';
+    var appleOverride = {
+      "Piazza di Città": "Piazza Ferruccio Nazionale, Ivrea, Italy",
+      "Piazza Rondolino": "Corso Botta, Ivrea, Italy",
+      "Borghetto": "Via Guido Gozzano, Ivrea, Italy"
+    };
+    var img = o.immagine ? '<button class="mapz" type="button" aria-label="Ingrandisci la mappa"><img src="' + o.immagine + '" alt="' + esc(o.titolo) + '"><span>🔍 Tocca per ingrandire</span></button>' : '';
+    return head(o) + img + '<div class="lst">' + o.voci.map(function (v, index) {
+      var gmaps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(v[0] + ", Ivrea, Italy");
+      var apple = "https://maps.apple.com/?q=" + encodeURIComponent(appleOverride[v[0]] || (v[0] + ", Ivrea, Italy"));
+      var tags = v[2].map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join("");
+      var id = "luogo-" + index;
+      return '<div class="pl" style="--i:' + index + '"><button class="pl-h" type="button" aria-expanded="false" aria-controls="' + id + '">' +
+        '<span class="num">' + (index + 1) + '</span><span class="pl-t"><b>' + esc(v[0]) + '</b>' + (v[1] ? '<small>' + esc(v[1]) + '</small>' : '') + '<span class="tags">' + tags + '</span></span><span class="chev" aria-hidden="true">›</span></button>' +
+        '<div class="pl-b" id="' + id + '"><div><div class="go">' +
+        '<a href="' + gmaps + '" target="_blank" rel="noopener noreferrer"><img src="https://img.icons8.com/?size=100&id=svxMiuKxGwZ3&format=png&color=000000" alt=""> Google Maps</a>' +
+        '<a href="' + apple + '" target="_blank" rel="noopener noreferrer"><img src="https://img.icons8.com/?size=100&id=9c6iBQaxdDK8&format=png&color=000000" alt=""> Apple Maps</a>' +
+        '</div></div></div></div>';
     }).join("") + '</div>';
   };
 
@@ -122,7 +108,6 @@
   S.squadre = function () {
     var o = D.squadre;
     return head(o) +
-      '<div class="sqbar"><button class="pill" id="sqp" type="button" aria-label="Squadra precedente">←</button><button class="pill" id="sqn" type="button" aria-label="Squadra successiva">→</button><span class="badge" id="sqc">1 / ' + o.righe.length + '</span></div>' +
       '<div class="slider" id="sq">' + o.righe.map(function (r) {
         var ini = r[0].replace(/^(Aranceri|Diavoli|Credendari) ?/, "").charAt(0) || r[0].charAt(0);
         var logo = r[4] ? '<img src="' + r[4] + '" alt="">' : "";
@@ -151,6 +136,67 @@
   }).join("");
   $("#footer").innerHTML = '<div class="wrap">' + D.footer + '</div>';
 
+  /* ---------- luoghi: apertura voci e mappa a schermo intero ---------- */
+  function lightbox(src, alt) {
+    var o = document.createElement("div"); o.className = "lb";
+    o.innerHTML = '<button class="lb-x" type="button" aria-label="Chiudi">✕</button><div class="lb-s"><img src="' + src + '" alt="' + esc(alt) + '"></div>';
+    document.body.appendChild(o); document.body.style.overflow = "hidden";
+    function chiudi() { o.remove(); document.body.style.overflow = ""; document.removeEventListener("keydown", k); }
+    function k(e) { if (e.key === "Escape") chiudi(); }
+    o.addEventListener("click", function (e) { if (e.target === o || e.target.className === "lb-x") chiudi(); });
+    document.addEventListener("keydown", k);
+  }
+  document.addEventListener("click", function (e) {
+    var h = e.target.closest(".pl-h");
+    if (h) {
+      var p = h.parentNode, apri = !p.classList.contains("open");
+      $$(".pl.open").forEach(function (x) { if (x !== p) { x.classList.remove("open"); $(".pl-h", x).setAttribute("aria-expanded", "false"); } });
+      p.classList.toggle("open", apri); h.setAttribute("aria-expanded", apri);
+      return;
+    }
+    var z = e.target.closest(".mapz");
+    if (z) { var im = $("img", z); lightbox(im.src, im.alt); }
+  });
+
+  /* ---------- personaggi: carosello a scatti ---------- */
+  var pg = $("#personaggi .places");
+  if (pg) {
+    var cards = $$(".pbox", pg), cur = 0, stop = false, back = 0, raf = 0;
+    var pn = document.createElement("div"); pn.className = "pgnav";
+    pn.innerHTML = '<button class="pgb" type="button" data-d="-1" aria-label="Personaggio precedente">\u2039</button><span class="pgd" aria-hidden="true">' +
+      cards.map(function () { return "<i></i>"; }).join("") + '</span><button class="pgb" type="button" data-d="1" aria-label="Personaggio successivo">\u203A</button>';
+    pg.parentNode.insertBefore(pn, pg.nextSibling);
+    var dots = $$("i", pn);
+    var padL = function () { return parseFloat(getComputedStyle(pg).paddingLeft) || 0; };
+    function nearest() {
+      if (pg.scrollLeft + pg.clientWidth >= pg.scrollWidth - 3) return cards.length - 1;
+      var x = pg.getBoundingClientRect().left + padL(), best = 0, bd = 1e9;
+      cards.forEach(function (c, i) { var d = Math.abs(c.getBoundingClientRect().left - x); if (d < bd) { bd = d; best = i; } });
+      return best;
+    }
+    function mark() {
+      cur = nearest();
+      cards.forEach(function (c, i) { c.classList.toggle("act", i === cur); });
+      dots.forEach(function (d, i) { d.classList.toggle("on", i === cur); });
+    }
+    function go(i) {
+      i = (i + cards.length) % cards.length;
+      pg.scrollTo({ left: cards[i].getBoundingClientRect().left - pg.getBoundingClientRect().left + pg.scrollLeft - padL(), behavior: "smooth" });
+    }
+    function hold() { stop = true; clearTimeout(back); back = setTimeout(function () { stop = false; }, 6000); }
+    pn.addEventListener("click", function (e) { var b = e.target.closest(".pgb"); if (b) { go(cur + Number(b.getAttribute("data-d"))); hold(); } });
+    ["pointerdown", "touchstart", "wheel", "focusin"].forEach(function (ev) { pg.addEventListener(ev, hold, { passive: true }); });
+    pg.addEventListener("mouseenter", function () { stop = true; clearTimeout(back); });
+    pg.addEventListener("mouseleave", hold);
+    pg.addEventListener("scroll", function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(mark); }, { passive: true });
+    setInterval(function () {
+      var r = pg.getBoundingClientRect();
+      if (stop || document.hidden || r.bottom < 0 || r.top > innerHeight) return;
+      go(cur + 1);
+    }, 3800);
+    mark(); addEventListener("resize", mark); addEventListener("load", mark);
+  }
+
   /* ---------- tab programma ---------- */
   var tabs = $$(".tabs button"), days = $$(".day");
   tabs.forEach(function (b, i) {
@@ -159,27 +205,36 @@
     });
   });
 
-  /* ---------- form ---------- */
-  var form = $("#rsvp"), msg = $("#msg");
+  // i tab partono dal primo giorno del viaggio (i precedenti restano a sinistra)
+  tabs.forEach(function (b) { b.addEventListener("click", function () { b.parentNode.scrollTo({ left: Math.max(0, b.offsetLeft - 8), behavior: "smooth" }); }); });
+  function tabIniziale() { var t = $('.tabs button[aria-selected="true"]'); if (t) t.parentNode.scrollLeft = Math.max(0, t.offsetLeft - 8); }
+  tabIniziale(); addEventListener("load", tabIniziale);
+
+  /* ---------- form: iscrizione o modifica ---------- */
+  var form = $("#rsvp"), msg = $("#msg"), mode = "new", cred = null;
+  var ERR = {
+    CREDENZIALI: "Nome, cognome o codice non corretti. Dopo 5 errori l'accesso si blocca per 15 minuti.",
+    POSTI_ESAURITI: "Nel frattempo i posti letto sono finiti: scegli «No» a «Dormi da noi?» e riprova.",
+    PIN_NON_VALIDO: "Codice non valido."
+  };
+  var NOTE = {
+    "new": "Scegli un codice di 4-6 cifre: ti serve per rivedere o cambiare la tua risposta. Non perderlo.",
+    "edit": "Inserisci lo stesso codice che hai scelto quando hai risposto. Dopo 5 errori l'accesso si blocca per 15 minuti."
+  };
   var val = function (n) { var r = form.querySelector('input[name="' + n + '"]:checked'); return r ? r.value : null; };
   var giorni = function () { return $$('input[name="giorni"]:checked', form).map(function (c) { return c.value; }); };
+  var setR = function (n, v) { $$('input[name="' + n + '"]', form).forEach(function (i) { i.checked = (i.value === v); }); };
 
-  // posti letto: null = non ancora caricati
+  // posti letto: null = non ancora caricati (il numero non si mostra, solo l'eventuale esaurimento)
   var occupati = null;
   function mostraLetti() {
     var liberi = Math.max(0, D.partecipa.letti - occupati);
     var si = form.querySelector('input[name="dorme"][value="si"]');
     si.disabled = liberi === 0;
     if (liberi === 0) si.checked = false;
-    $("#letti").textContent = liberi === 0
-      ? "Posti letto esauriti."
-      : "Posti letto rimasti: " + liberi + " su " + D.partecipa.letti + ".";
+    $("#letti").textContent = liberi === 0 ? "Posti letto esauriti." : "";
   }
-  function caricaLetti() {
-    $("#letti").textContent = "Controllo i posti letto…";
-    API.posti().then(function (n) { occupati = n; mostraLetti(); })
-      .catch(function () { $("#letti").textContent = ""; });
-  }
+  function caricaLetti() { API.posti().then(function (n) { occupati = n; mostraLetti(); }).catch(function () {}); }
 
   function sync() {
     var vai = val("partecipa") === "si", d = val("durata");
@@ -190,7 +245,6 @@
     var max = d === "un_giorno" ? 1 : 3;
     var sel = giorni();
     while (sel.length > max) { form.querySelector('input[name="giorni"][value="' + sel.pop() + '"]').checked = false; }
-    // «Dormi da noi?» compare solo da 2 giorni in su
     $("#dm").hidden = !multi;
     if (multi) { if (occupati === null) caricaLetti(); else mostraLetti(); }
   }
@@ -198,11 +252,52 @@
 
   function show(t, ok) { msg.textContent = t; msg.className = "msg " + (ok ? "ok" : "err"); }
 
+  function setMode(m) {
+    var id = [$("#nome").value, $("#cognome").value, $("#pin").value], edit = m === "edit";
+    mode = m; cred = null;
+    $$(".mode button").forEach(function (b) { b.setAttribute("aria-selected", b.getAttribute("data-m") === m); });
+    form.reset(); $("#nome").value = id[0]; $("#cognome").value = id[1]; $("#pin").value = id[2];
+    ["nome", "cognome", "pin"].forEach(function (k) { $("#" + k).readOnly = false; });
+    $("#entrabox").hidden = !edit; $("#corpo").hidden = edit; $("#esci").hidden = true;
+    $("#invia").textContent = edit ? "Salva le modifiche" : "Invia la risposta";
+    $("#fh").textContent = edit ? "✏️ Accedi alla tua risposta" : "✨ Nuova risposta";
+    $("#pinnote").textContent = NOTE[m]; msg.textContent = ""; occupati = null; sync();
+    form.classList.remove("swap"); void form.offsetWidth; form.classList.add("swap");
+  }
+  $$(".mode button").forEach(function (b) {
+    b.addEventListener("click", function () { var m = b.getAttribute("data-m"); if (m !== mode) setMode(m); });
+  });
+  $("#esci").addEventListener("click", function () { setMode("edit"); });
+
+  // modifica: accesso con nome, cognome e codice
+  $("#entra").addEventListener("click", function () {
+    var c = { p_nome: $("#nome").value.trim(), p_cognome: $("#cognome").value.trim(), p_pin: $("#pin").value.trim() };
+    if (!c.p_nome || !c.p_cognome || !c.p_pin) return show("Compila nome, cognome e codice.", false);
+    if (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY) return show("Database non configurato: la modifica non è disponibile in modalità prova.", false);
+    var b = $("#entra"); b.disabled = true; show("Accesso in corso…", true);
+    Promise.all([API.rpc("profilo_leggi", c), API.posti()]).then(function (r) {
+      var p = r[0]; cred = c; occupati = r[1] - (p.dorme ? 1 : 0);
+      setR("partecipa", p.partecipa ? "si" : "no"); setR("durata", p.durata);
+      var gs = p.giorni || [];
+      $$('input[name="giorni"]', form).forEach(function (i) { i.checked = gs.indexOf(i.value) > -1; });
+      setR("tira", p.tira == null ? null : (p.tira ? "si" : "no")); setR("dorme", p.dorme ? "si" : "no");
+      ["nome", "cognome", "pin"].forEach(function (k) { $("#" + k).readOnly = true; });
+      $("#entrabox").hidden = true; $("#corpo").hidden = false; $("#esci").hidden = false;
+      $("#fh").textContent = "✏️ Ciao " + p.nome + ", modifica la tua risposta";
+      msg.textContent = ""; sync();
+    }).catch(function (e) { show(ERR[e.message] || "Errore: " + e.message, false); })
+      .then(function () { b.disabled = false; });
+  });
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    var edit = mode === "edit";
+    if (edit && !cred) return show("Prima accedi alla tua risposta.", false);
     var nome = $("#nome").value.trim(), cognome = $("#cognome").value.trim(), pin = $("#pin").value.trim(), vai = val("partecipa");
-    if (!nome || !cognome) return show("Inserisci nome e cognome.", false);
-    if (!/^\d{4,6}$/.test(pin)) return show("Il codice deve essere di 4-6 cifre.", false);
+    if (!edit) {
+      if (!nome || !cognome) return show("Inserisci nome e cognome.", false);
+      if (!/^\d{4,6}$/.test(pin)) return show("Il codice deve essere di 4-6 cifre.", false);
+    }
     if (!vai) return show("Scegli se partecipi o no.", false);
     var rec = { nome: nome, cognome: cognome, pin: pin, partecipa: vai === "si", durata: null, giorni: null, tira: null, dorme: false };
     if (rec.partecipa) {
@@ -218,21 +313,28 @@
       rec.tira = val("tira") === "si";
       rec.dorme = multi && val("dorme") === "si";
     }
-    var btn = $("#invia"); btn.disabled = true; show("Invio in corso…", true);
-    send(rec).then(function (offline) {
+    var btn = $("#invia"); btn.disabled = true; show(edit ? "Salvataggio in corso…" : "Invio in corso…", true);
+    (edit ? salva(rec) : send(rec)).then(function (offline) {
+      if (edit) {
+        show("Modifiche salvate.", true);
+        return API.posti().then(function (n) { occupati = n - (rec.dorme ? 1 : 0); sync(); }).catch(function () {});
+      }
       show(offline
         ? "Database non configurato: risposta salvata solo su questo dispositivo (modalità prova)."
-        : "Grazie " + nome + ", risposta inviata! Ricorda il tuo codice: ti serve per modificarla dal profilo.", true);
+        : "Grazie " + nome + ", risposta inviata! Ricorda il tuo codice: ti serve per modificarla da qui, scegliendo «Modifico la risposta».", true);
       form.reset(); occupati = null; sync();
     }).catch(function (err) {
-      if (err && err.message === "POSTI_ESAURITI") {
-        show("Nel frattempo i posti letto sono finiti: scegli «No» a «Dormi da noi?» e reinvia.", false);
-        caricaLetti();
-      } else {
-        show("Invio non riuscito. Controlla la connessione e riprova.", false);
-      }
+      if (err && ERR[err.message]) { show(ERR[err.message], false); if (err.message === "POSTI_ESAURITI") caricaLetti(); }
+      else show("Invio non riuscito. Controlla la connessione e riprova.", false);
     }).then(function () { btn.disabled = false; });
   });
+
+  function salva(rec) {
+    return API.rpc("profilo_aggiorna", {
+      p_nome: cred.p_nome, p_cognome: cred.p_cognome, p_pin: cred.p_pin, p_partecipa: rec.partecipa,
+      p_durata: rec.durata, p_giorni: rec.giorni, p_tira: rec.tira, p_dorme: rec.dorme
+    });
+  }
 
   function send(rec) {
     if (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY) {
@@ -251,29 +353,53 @@
   // slider squadre
   var sq = $("#sq");
   if (sq) {
+    // copia delle card per un giro continuo senza interruzioni
+    var n0 = sq.children.length;
+    Array.prototype.slice.call(sq.children).forEach(function (c) {
+      var k = c.cloneNode(true); k.setAttribute("aria-hidden", "true");
+      $$("button,a", k).forEach(function (x) { x.tabIndex = -1; });
+      sq.appendChild(k);
+    });
     $$(".card-link", sq).forEach(function (b) {
       b.addEventListener("click", function () {
         var c = b.closest(".box"), open = !c.classList.contains("open");
         c.classList.toggle("open", open); b.setAttribute("aria-expanded", open);
       });
     });
-    var cnt = $("#sqc");
-    sq.addEventListener("scroll", function () {
-      var k = sq.children.length, w = sq.scrollWidth / k;
-      cnt.textContent = Math.min(k, Math.round(sq.scrollLeft / w) + 1) + " / " + k;
-    }, { passive: true });
-    $("#sqp").onclick = function () { sq.scrollBy({ left: -300, behavior: "smooth" }); };
-    $("#sqn").onclick = function () { sq.scrollBy({ left: 300, behavior: "smooth" }); };
+    // scorrimento automatico lento e continuo; si ferma al tocco e riparte dopo 4 secondi
+    var pos = 0, pausa = false, ripresa = 0, ultimo = 0, VEL = 26, giro = 0; // px al secondo
+    function misura() { giro = sq.children[n0].offsetLeft - sq.children[0].offsetLeft; }
+    misura(); addEventListener("resize", misura); addEventListener("load", misura);
+    function ferma() { pausa = true; clearTimeout(ripresa); }
+    function riparti() { clearTimeout(ripresa); ripresa = setTimeout(function () { pos = sq.scrollLeft; if (giro && pos >= giro) pos -= giro; pausa = false; }, 4000); }
+    ["pointerdown", "touchstart", "mouseenter", "focusin", "wheel"].forEach(function (ev) { sq.addEventListener(ev, ferma, { passive: true }); });
+    ["touchend", "pointerup", "mouseleave", "focusout"].forEach(function (ev) { sq.addEventListener(ev, riparti, { passive: true }); });
+    function drift(t) {
+      var dt = Math.min(t - ultimo, 64) / 1000; ultimo = t;
+      var r = sq.getBoundingClientRect();
+      if (!pausa && !document.hidden && r.bottom > 0 && r.top < innerHeight) {
+        pos += VEL * dt; if (giro && pos >= giro) pos -= giro;
+        sq.scrollLeft = pos;
+      }
+      requestAnimationFrame(drift);
+    }
+    requestAnimationFrame(drift);
   }
 
   // hero: pulsanti, posti letto, riduci movimento
   var hw = $("#hero .wrap");
   if (hw) {
-    hw.insertAdjacentHTML("beforeend", '<div class="cta-row"><a class="btn pri" href="#partecipa">Ci sono! Rispondi ora</a><a class="btn ghost" href="#programma">Vedi il programma</a><span class="badge" id="posti" hidden></span></div>');
-    if (window.API) API.posti().then(function (n) {
-      if (!C.SUPABASE_URL) return;
-      var p = $("#posti"); p.textContent = "🍊 Posti letto liberi: " + Math.max(0, D.partecipa.letti - n) + " su " + D.partecipa.letti; p.hidden = false;
-    }).catch(function () {});
+    hw.insertAdjacentHTML("beforeend", '<div class="cta-row"><a class="btn pri" href="#partecipa">Ci sono! Rispondi ora</a><a class="btn ghost" href="#programma">Vedi il programma</a></div>');
+    var h1 = $("h1", hw);
+    if (h1) {
+      var parts = h1.innerHTML.split(/<br\s*\/?>/i), k = 0;
+      h1.setAttribute("aria-label", parts.join(" ").replace(/<[^>]+>/g, ""));
+      h1.innerHTML = parts.map(function (line, li) {
+        return '<span class="ln ln' + (li + 1) + '" aria-hidden="true">' + line.replace(/<[^>]+>/g, "").split(" ").map(function (w) {
+          return '<span class="wd">' + w.split("").map(function (c) { return '<span class="ch" style="--i:' + (k++) + '">' + esc(c) + '</span>'; }).join("") + '</span>';
+        }).join(" ") + '</span>';
+      }).join("");
+    }
   }
   // fascia scorrevole e forme di sfondo
   $("#hero").insertAdjacentHTML("afterend", '<div class="mq" aria-hidden="true"><div>' +
@@ -289,20 +415,35 @@
   function meas() {
     A = secs.map(function (e) {
       var c = getComputedStyle(e), r = e.getBoundingClientRect();
-      return { y: r.top + scrollY + r.height / 2, b: hx(c.getPropertyValue("--sb").trim() || "#ffffff"), f: c.getPropertyValue("--sf").trim() || "#17130F" };
+      return { t: r.top + scrollY, h: r.height, b: hx(c.getPropertyValue("--sb").trim() || "#ffffff"), f: c.getPropertyValue("--sf").trim() || "#17130F" };
+    });
+    // confine tra una sezione e la successiva + ampiezza della fascia di sfumatura
+    // (mai oltre il 42% dell'altezza di ciascuna: ogni sezione conserva il proprio colore "pieno")
+    A.forEach(function (a, i) {
+      var n = A[i + 1];
+      if (!n) { a.e = Infinity; a.w = 0; return; }
+      a.e = (a.t + a.h + n.t) / 2;
+      a.w = Math.min(innerHeight * .32, a.h * .42, n.h * .42);
     });
   }
   function paint() {
     tick = 0; if (!A.length) return;
     var y = scrollY + innerHeight * .5, i = 0;
-    while (i < A.length - 1 && A[i + 1].y <= y) i++;
-    var a = A[i], b = A[Math.min(i + 1, A.length - 1)], t = a === b ? 0 : (y - a.y) / (b.y - a.y);
+    while (i < A.length - 1 && y > A[i].e + A[i].w) i++;
+    var a = A[i], b = A[Math.min(i + 1, A.length - 1)], t = (a === b || !a.w) ? 0 : (y - (a.e - a.w)) / (2 * a.w);
     t = Math.max(0, Math.min(1, t)); t = t * t * (3 - 2 * t);
     root.style.setProperty("--page", "rgb(" + a.b.map(function (v, k) { return Math.round(v + (b.b[k] - v) * t); }) + ")");
     root.style.setProperty("--fg", t > .5 ? b.f : a.f);
     var m = document.documentElement.scrollHeight - innerHeight;
     bar.style.width = (m > 0 ? scrollY / m * 100 : 0) + "%";
     fx.style.setProperty("--sy", scrollY);
+    if (motionOK) {
+      var vc = scrollY + innerHeight / 2;
+      secs.forEach(function (s, k) {
+        var q = A[k], p = (vc - (q.t + q.h / 2)) / (q.h / 2 + innerHeight / 2);
+        s.style.setProperty("--sp", Math.max(-1, Math.min(1, p)).toFixed(3));
+      });
+    }
     var h = $(".hero"); if (h) h.style.setProperty("--py", Math.min(scrollY, 700) * .15 + "px");
   }
   meas(); paint();
@@ -310,7 +451,7 @@
   addEventListener("resize", function () { meas(); paint(); });
   addEventListener("load", function () { meas(); paint(); });
   setTimeout(function () { meas(); paint(); }, 800);
-  if (window.matchMedia && matchMedia("(hover:hover)").matches) {
+  if (motionOK && window.matchMedia && matchMedia("(hover:hover)").matches) {
     addEventListener("mousemove", function (e) {
       fx.style.setProperty("--mx", e.clientX / innerWidth - .5); fx.style.setProperty("--my", e.clientY / innerHeight - .5);
     }, { passive: true });
@@ -320,8 +461,10 @@
   if ("IntersectionObserver" in window) {
     root.classList.add("js");
     var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+      es.forEach(function (e) { e.target.classList.toggle("in", e.isIntersecting); });
     }, { threshold: .04, rootMargin: "0px 0px -6% 0px" });
     $$("main>section").forEach(function (x) { io.observe(x); });
+    $$(".gear").forEach(function (x) { io.observe(x); });
+    $$(".story>*").forEach(function (x) { if (x.tagName !== "H2") io.observe(x); });
   }
 })();
